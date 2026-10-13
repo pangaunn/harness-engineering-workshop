@@ -18,3 +18,11 @@ the docs, checks, and gates in a repo that keep coding agents on track during co
 | GET  | `/reports/revenue` | `?date=YYYY-MM-DD` |
 
 Dates are `YYYY-MM-DD`. A stay is `[check_in, check_out)`. Amounts are in Thai baht and include 7% VAT.
+
+## Acknowledgements
+
+The workshop format, where the same task is run with and without a harness and the results are
+compared, is adapted from [Learn Harness Engineering](https://github.com/walkinglabs/learn-harness-engineering)
+by [walkinglabs](https://github.com/walkinglabs) (MIT License). In that course, every project compares
+weak and strong harness results. This workshop applies the same idea to code maintenance on a Go
+backend, with paired `without` / `with` branches for each round.
