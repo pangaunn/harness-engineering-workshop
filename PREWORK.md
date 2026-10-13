@@ -13,11 +13,14 @@
    ```
    Every package should print `ok` (or `no test files`). If anything fails, tell the facilitator
    before the workshop.
-4. **Fetch all workshop branches:** `git fetch --all`. You should see `r1-with`, `r1-without`,
-   `r2-with`, `r2-without`, `r3-with`, `r3-without`, `r4-with`, `r4-without`.
+4. **Fetch all workshop branches:** `git fetch --all`, then `git branch -r`. You should see
+   `r1-with`, `r1-without`, `r2-without`, `r2-kit`, `r2-with`, `r3-without`, `r3-with`,
+   `r4-without`, `r4-with`.
 5. **Check your coding agent.** Open it in the repo and confirm it can edit files and run shell
    commands there (for example, ask it to run `go version`). Then `git checkout .` to discard anything it changed.
-6. **Optional:** install `make`. The `with` branches use `make check`. On Windows without `make`,
-   the same steps are `gofmt -l .`, `go vet ./...`, `go test ./...`.
+6. **Install `make`** (macOS and Linux usually have it). On Windows, use WSL or Git Bash with
+   `make` installed. You'll build a `make check` during the workshop.
+7. **Keep `WORKSHOP.md` open** in a browser (it's on the `main` branch on GitHub). The round
+   branches don't contain it.
 
 Bring a laptop with a charged battery. You'll work in pairs, so one laptop per pair is enough.

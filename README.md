@@ -3,7 +3,9 @@
 A small hotel booking API in Go, used for a hands-on workshop on **harness engineering**:
 the docs, checks, and gates in a repo that keep coding agents on track during code maintenance.
 
-- Participants: start with [PREWORK.md](PREWORK.md), then follow [WORKSHOP.md](WORKSHOP.md).
+- Participants: start with [PREWORK.md](https://github.com/pangaunn/harness-engineering-workshop/blob/main/PREWORK.md),
+  then follow [WORKSHOP.md](https://github.com/pangaunn/harness-engineering-workshop/blob/main/WORKSHOP.md).
+  Both live on the `main` branch only.
 - Run the API: `go run ./cmd/server` (listens on `:8080`, in-memory SQLite, seeded on startup).
 - Run the tests: `go test ./...`
 
