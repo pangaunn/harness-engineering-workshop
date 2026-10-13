@@ -23,8 +23,8 @@ You build **one harness** over rounds 2–4 and keep it on your own branches (`r
 3. Paste the round prompt **exactly as written**.
 4. Add nothing else. No hints, no "run the tests", no "read the docs". The harness has to do that work.
 5. If the agent asks a question, reply only: `Use your best judgment.`
-6. When the agent says it's done, stop. Don't ask it to fix anything. Report your result to the
-   facilitator's scoreboard.
+6. When the agent says it's done, stop. Don't ask it to fix anything. Report your result on the
+   scorecard form (the QR code on the slides).
 
 Throw away the agent's changes with:
 ```
@@ -69,7 +69,8 @@ The kit gives you:
 - `internal/archtest/rules.go`: **empty rules** for you to fill in. The comments show the format
   with an example from a different app.
 - `Makefile`: `make check` runs gofmt, `go vet` and all tests.
-- `AGENTS.md`: headings only. Agents read this file first.
+- `AGENTS.md`: headings only. Agents read this file first. (`CLAUDE.md` just points to it, for
+  tools that look for that name.)
 
 Do this:
 1. Run `go test ./internal/archtest/`. Every package fails with "not registered".
@@ -94,7 +95,7 @@ result. Then `git reset --hard && git clean -fd` (your harness commit stays).
 
 **Step 4 · Compare with ours (~5 min).**
 ```
-git diff r2-mine origin/r2-with -- AGENTS.md Makefile internal/archtest docs
+git diff r2-mine origin/r2-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs
 ```
 Where do your rules differ from ours? Would ours have stopped something yours let through?
 
@@ -118,10 +119,10 @@ Fix the bug: a guest cannot book a room starting on the day the previous guest c
 ```
 git reset --hard && git clean -fd
 git switch -c r3-mine
-git checkout r2-mine -- AGENTS.md Makefile internal/archtest
+git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest
 ```
 (No working round 2 harness? Use ours instead:
-`git checkout origin/r2-with -- AGENTS.md Makefile internal/archtest docs`.)
+`git checkout origin/r2-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs`.)
 
 Run `make check`: it should pass on this branch. Then add a **Definition of done** section to
 `AGENTS.md`: what "done" means for a bug fix in this repo, and what the agent must *not* touch.
@@ -132,7 +133,7 @@ Same rule as round 2: describe "done", never the answer.
 
 **Step 4 · Compare with ours.**
 ```
-git diff r3-mine origin/r3-with -- AGENTS.md Makefile
+git diff r3-mine origin/r3-with -- AGENTS.md CLAUDE.md Makefile
 ```
 Which parts of your "done" are sentences an agent may ignore, and which are commands that fail?
 
@@ -157,9 +158,9 @@ a group booking refunds each room using the existing cancellation policy.
 ```
 git reset --hard && git clean -fd
 git switch -c r4-mine
-git checkout r3-mine -- AGENTS.md Makefile internal/archtest
+git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest
 ```
-(No working round 3 harness? `git checkout origin/r3-with -- AGENTS.md Makefile internal/archtest docs`.)
+(No working round 3 harness? `git checkout origin/r3-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs`.)
 
 Check your rules with `go test ./internal/archtest/`. (`make check` fails on this branch until the
 feature exists: the group-booking tests are the task.)
@@ -177,7 +178,7 @@ Then look at `git diff -- internal/archtest`: what did the agent change in your 
 
 **Step 4 · Compare with ours.**
 ```
-git diff r4-mine origin/r4-with -- AGENTS.md Makefile internal/archtest docs
+git diff r4-mine origin/r4-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs
 ```
 Should an agent be allowed to edit its own harness? Where would you draw the line, and how would
 you enforce it?
