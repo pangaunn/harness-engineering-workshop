@@ -1,6 +1,6 @@
 module github.com/pangaunn/harness-engineering-workshop
 
-go 1.22
+go 1.23
 
 require modernc.org/sqlite v1.33.1
 
