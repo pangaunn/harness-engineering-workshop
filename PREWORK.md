@@ -1,8 +1,8 @@
 # Prework (15 minutes, before the workshop)
 
-1. **Install Go 1.22.6 or newer.** Check with `go version`. No C compiler needed (SQLite is pure Go).
-   On macOS 15 (Sequoia), older Go versions fail `go test` with `missing LC_UUID load command`.
-   Upgrade Go, then run `go clean -testcache`.
+1. **Install Go 1.23 or newer.** Check with `go version`. No C compiler needed (SQLite is pure Go).
+   On recent macOS (15 Sequoia and later), every Go 1.22.x fails `go test` with
+   `missing LC_UUID load command`. Upgrade to Go 1.23+, then run `go clean -testcache`.
 2. **Clone the repo:**
    ```
    git clone https://github.com/pangaunn/harness-engineering-workshop.git
