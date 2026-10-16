@@ -15,7 +15,8 @@ func NewRoomTypes(db *sql.DB) *RoomTypes { return &RoomTypes{db: db} }
 const roomTypeColumns = `id, name, capacity, weekday_rate, weekend_rate`
 
 func (r *RoomTypes) List(ctx context.Context) ([]model.RoomType, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+roomTypeColumns+` FROM room_types ORDER BY weekday_rate`)
+	rows, err := r.db.QueryContext(ctx, `SELECT `+roomTypeColumns+`, ROUND(MIN(weekday_rate, weekend_rate) * 107 / 100, 2)
+		FROM room_types ORDER BY weekday_rate`)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +24,7 @@ func (r *RoomTypes) List(ctx context.Context) ([]model.RoomType, error) {
 	var out []model.RoomType
 	for rows.Next() {
 		var t model.RoomType
-		if err := rows.Scan(&t.ID, &t.Name, &t.Capacity, &t.WeekdayRate, &t.WeekendRate); err != nil {
+		if err := rows.Scan(&t.ID, &t.Name, &t.Capacity, &t.WeekdayRate, &t.WeekendRate, &t.FromPrice); err != nil {
 			return nil, err
 		}
 		out = append(out, t)

@@ -6,21 +6,24 @@
       "name": "Standard Double",
       "capacity": 2,
       "weekday_rate": 1450.00,
-      "weekend_rate": 1850.00
+      "weekend_rate": 1850.00,
+      "from_price": 1551.50
     },
     {
       "id": "deluxe",
       "name": "Deluxe River View",
       "capacity": 2,
       "weekday_rate": 2149.25,
-      "weekend_rate": 2549.25
+      "weekend_rate": 2549.25,
+      "from_price": 2299.70
     },
     {
       "id": "suite",
       "name": "Riverside Suite",
       "capacity": 4,
       "weekday_rate": 4350.00,
-      "weekend_rate": 5250.00
+      "weekend_rate": 5250.00,
+      "from_price": 4654.50
     }
   ]
 }
