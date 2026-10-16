@@ -296,7 +296,8 @@ git checkout origin/r2-kit -- .        # pull in the round 2 kit
 git add -A &amp;&amp; git commit -m "our harness"
 
 # rounds 3 and 4: bring your harness from the previous round
-git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
+git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest           # round 3
+git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile scripts internal/archtest   # round 4</pre>
 <p>Keep this slide up, or print it.</p></div>
 </section>
 
@@ -458,31 +459,43 @@ red-first: ok, your changed tests fail on the code at HEAD:
 </section>
 
 <section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
-  <h2>Round 4 · Step 1</h2>
-  <div class="body"><ul><li>Steps: fail · add to your harness · rerun · compare.</li></ul>
-<pre>git checkout r4-without</pre>
-<div class="prompt">Add group bookings: a guest can reserve 2 to 5 rooms for the same dates in one request via POST /group-bookings. Either all rooms are booked or none. Charge one combined payment. Cancelling a group booking refunds each room using the existing cancellation policy.</div>
-<ul><li>Write down "before". Which new packages did the agent create? What do they import?</li></ul></div>
+  <h2>Round 4 · Why must the rules grow?</h2>
+  <div class="body"><ul><li>Your R2 rules list today's packages. The next feature adds one, and <code>make check</code> goes red: <code>internal/service/… is not registered</code>.</li><li><p>Two ways to make it green:</p>
+<ul><li><strong>Register it</strong> in the right layer: the rules grow with the code.</li><li><strong>Loosen</strong> <code>allowed</code>, or invent a layer that may import anything: the rules shrink.</li></ul></li><li>Both are green. In a big diff, nobody notices which one happened.</li><li>The docs fall behind the same way: a new package nobody wrote down.</li></ul>
+<p>Example (any team): a test fails before a release, and someone deletes it. Is that a fix?</p></div>
 </section>
 
 <section class="slide dense xdense" data-part="Round 4 · Growing the architecture" data-backup>
-  <h2>Step 2 · Add to your harness</h2>
-  <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd
-git switch -c r4-mine
-git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
-<ul><li>No working round 3 harness? <code>git checkout origin/r3-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</code></li><li>Check with <code>go test ./internal/archtest/</code> (<code>make check</code> fails until the feature exists).</li><li><p>Answer two questions in <code>AGENTS.md</code>:</p>
-<ol><li>How do you add a new package? Which layer, where to register it?</li><li>What may the agent change in the harness? Registering = fine. Loosening <code>allowed</code> = not.</li></ol></li><li>Stretch: make "not registered" point to your how-to.</li></ul></div>
+  <h2>Round 4 · Step 1</h2>
+  <div class="body"><ul><li>Steps: run · build your harness with your agent · rerun · compare.</li><li><code>r4-without</code> = our R3 result + our R1–R3 harness.</li></ul>
+<pre>git checkout r4-without</pre>
+<div class="prompt">Add POST /group-bookings: book 2–5 rooms of one room type for the same dates under one guest name. All rooms are booked or none are. Group stays follow the same stay rules as single bookings. Every room in a group pays the same price: the busy-night surcharge uses occupancy before the group, not the group's own rooms. Group bookings live in their own package, service/groupbooking, so booking doesn't keep growing.  Request: the /bookings fields plus "rooms". Response: 201 with {"bookings": [...], "total": ...}.</div>
+<ul><li>Write down "before": <code>git status --short</code> and <code>git diff internal/archtest/rules.go</code>. Which packages are new, and which layer did each get? Did <code>allowed</code> change? Did the docs and tests grow too?</li></ul></div>
+</section>
+
+<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
+  <h2>Step 2 · Build your harness with your agent</h2>
+  <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd &amp;&amp; git switch -c r4-mine
+git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile scripts internal/archtest</pre>
+<p>(No working round 3 harness? Skip the second line: <code>r4-without</code> already has ours.)</p>
+<ol><li><strong>Decide as a pair first:</strong> what may grow? What needs a human? What must a new package come with?</li><li><strong>New session.</strong> Work it out with your agent, the way you would at work: an <code>## Adding a package</code> recipe, and a <code>make check</code> that fails when <code>allowed</code> changes.</li><li><strong>Prove it yourself:</strong> add <code>"aggregate"</code> to <code>allowed["aggregate"]</code> → red. Undo. Commit.</li></ol></div>
 </section>
 
 <section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
   <h2>Step 3 · Rerun, Step 4 · Compare</h2>
-  <div class="body"><ul><li>Fresh session, same tool, same prompt. Write down "after".</li><li><code>git diff -- internal/archtest</code>: what did the agent change in your harness?</li></ul>
-<pre>git diff r4-mine origin/r4-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</pre></div>
+  <div class="body"><ul><li>Fresh session, same tool, same prompt. Write down "after".</li><li><code>git diff -- internal/archtest AGENTS.md docs</code>: what did the agent change in your rules and docs?</li></ul>
+<pre>git diff r4-mine origin/r4-with -- AGENTS.md Makefile scripts internal/archtest</pre>
+<ul><li>Which of your rules can the agent change as easily as the code?</li></ul></div>
 </section>
 
 <section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
   <h2>Reveal: Round 4</h2>
-  <div class="body"><ul><li>Our answer: extract the refund policy into a new domain (<code>service/cancellation</code>); both aggregates use it. Register the new packages; <code>allowed</code> unchanged.</li><li><strong>Should an agent be allowed to edit its own harness?</strong> Where's the line? How would you enforce it?</li></ul></div>
+  <div class="body"><ul><li>Our answer: the shared stay rules become a new domain, <strong><code>stay</code></strong>; <code>groupbooking</code> is a new aggregate. <code>layers</code> grows by two; <strong><code>allowed</code> is unchanged</strong>.</li><li><p>Our <code>make check</code> lets the rules grow and stops them shrinking:</p>
+<pre>harness-guard: FAIL: `allowed` in internal/archtest/rules.go changed.
+  Only a human may loosen the rules. Registering a package in `layers` is fine.
+  Fix the design instead (see "Adding a package" in AGENTS.md), or stop and ask.
+
+FAIL: AGENTS.md does not name `groupbooking` (aggregate), `stay` (domain)</pre></li></ul></div><p class="callout sm">The rules may grow. Only a human may loosen them.</p>
 </section>
 
 <section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
