@@ -42,7 +42,11 @@ The facilitator tells your pair `with` or `without`.
 Migrate all money values from float64 to the Money type (int64 satang) defined in internal/model.
 ```
 
-3. Report your result, then reset.
+3. When the agent stops, check its work yourself and report on the scorecard:
+   - Run `go test -tags integration ./...`. Do all tests pass?
+   - Read the agent's log. Before it said done, did it run `make check` or
+     `go test -tags integration ./...`? Plain `go test ./...` doesn't count.
+4. Reset.
 
 ## Round 2 · Architecture rules (build)
 
