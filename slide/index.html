@@ -388,13 +388,14 @@ test:
   <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd
 git switch -c r2-mine
 git checkout origin/r2-kit -- .</pre>
-<ul><li><code>internal/archtest/arch_test.go</code>: reads real imports with <code>go/parser</code>. You don't need to edit it (unless you're done early: the error messages live there).</li><li><code>internal/archtest/rules.go</code>: <strong>empty rules. You fill these in.</strong></li><li><code>Makefile</code>: <code>make check</code></li><li><code>AGENTS.md</code>: headings only (<code>CLAUDE.md</code> points to it)</li></ul></div>
+<ul><li><p>The kit adds <code>internal/archtest/</code>:</p>
+<ul><li><code>arch_test.go</code>: reads real imports with <code>go/parser</code>. You don't need to edit it (unless you're done early: the error messages live there).</li><li><code>rules.go</code>: <strong>empty rules. You fill these in.</strong></li></ul></li><li><code>make check</code> and <code>AGENTS.md</code> are already here from Round 1 (<code>CLAUDE.md</code> points to <code>AGENTS.md</code>).</li></ul></div>
 </section>
 
 <section class="slide" data-part="Round 2 · Architecture rules">
   <h2>Step 2 · Build the rules</h2>
-  <div class="body"><ol><li><code>go test ./internal/archtest/</code> → every package "not registered".</li><li>Fill in <code>layers</code>: put every package under <code>internal/</code> into a layer.</li><li>Fill in <code>allowed</code>: which layer may import which. Run the test until it passes.</li><li>Test your rule: add an import of <code>service/pricing</code> into <code>service/payment</code>. Does it fail? Remove it again.</li><li><code>AGENTS.md</code>: one sentence per rule + "You are not done until <code>make check</code> passes."</li><li><code>git add -A &amp;&amp; git commit -m "our harness"</code></li></ol>
-<ul><li><code>make check</code> still fails on this branch: that's the bug the agent will fix.</li><li><strong>Done early?</strong> Make your error message say where the logic should go instead · Try to put the logic in the wrong place in a way your rules still accept.</li></ul></div>
+  <div class="body"><ol><li><code>go test ./internal/archtest/</code> skips: no rules yet. Add your first layer and every package you haven't listed shows "not registered".</li><li>Fill in <code>layers</code>: put every package under <code>internal/</code> into a layer.</li><li>Fill in <code>allowed</code>: which layer may import which. Run the test until it passes.</li><li>Test your rule: add an import of <code>service/pricing</code> into <code>service/payment</code>. Does it fail? Remove it again.</li><li><code>AGENTS.md</code>: add one sentence per rule.</li><li><code>git add -A &amp;&amp; git commit -m "our harness"</code></li></ol>
+<ul><li><strong>Done early?</strong> Make your error message say where the logic should go instead · Try to put the logic in the wrong place in a way your rules still accept.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Round 2 · Architecture rules">

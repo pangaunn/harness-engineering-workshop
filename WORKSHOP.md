@@ -81,18 +81,19 @@ git switch -c r2-mine
 git checkout origin/r2-kit -- .
 ```
 
-The kit gives you:
-- `internal/archtest/arch_test.go`: a ready-made test that reads every package's real imports
-  (with Go's `go/parser`) and checks them against your rules. You don't need to edit it (unless
-  you're done early: the error messages live there).
-- `internal/archtest/rules.go`: **empty rules** for you to fill in. The comments show the format
-  with an example from a different app.
-- `Makefile`: `make check` runs gofmt, `go vet` and all tests.
-- `AGENTS.md`: headings only. Agents read this file first. (`CLAUDE.md` just points to it, for
-  tools that look for that name.)
+The kit adds `internal/archtest/`:
+- `arch_test.go`: a ready-made test that reads every package's real imports (with Go's
+  `go/parser`) and checks them against your rules. You don't need to edit it (unless you're done
+  early: the error messages live there).
+- `rules.go`: **empty rules** for you to fill in. The comments show the format with an example from
+  a different app.
+
+`make check` and `AGENTS.md` are already here from Round 1. Agents read `AGENTS.md` first
+(`CLAUDE.md` just points to it, for tools that look for that name).
 
 Do this:
-1. Run `go test ./internal/archtest/`. Every package fails with "not registered".
+1. Run `go test ./internal/archtest/`. It skips: there are no rules yet. Once you add your first
+   layer, every package you haven't listed fails with "not registered".
 2. Fill in `layers`: put every package under `internal/` into a layer. Decide which layers this
    app needs. Look at what each package does.
 3. Fill in `allowed`: for each layer, list the layers it may import. Run
@@ -101,7 +102,7 @@ Do this:
    package, for example
    `_ "github.com/pangaunn/harness-engineering-workshop/internal/service/pricing"`.
    Does `go test ./internal/archtest/` fail? If not, your rules are too loose. Remove the import.
-5. Write `AGENTS.md`: one sentence per rule, plus "You are not done until `make check` passes."
+5. In `AGENTS.md`, add one sentence per rule.
 6. Save your harness: `git add -A && git commit -m "our harness"`.
 
 **The harness may describe rules and checks, never the answer.** Write rules that would still be

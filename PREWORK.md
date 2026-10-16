@@ -21,7 +21,8 @@
 5. **Check your coding agent.** Open it in the repo and confirm it can edit files and run shell
    commands there (for example, ask it to run `go version`). Then `git checkout .` to discard anything it changed.
 6. **Install `make`** (macOS and Linux usually have it). On Windows, use WSL or Git Bash with
-   `make` installed. You'll build a `make check` during the workshop.
+   `make` installed. `make check` is how every round checks the code; you'll add your own checks
+   to it.
 7. **Keep `WORKSHOP.md` open** in a browser (it's on the `main` branch on GitHub). The round
    branches don't contain it.
 
