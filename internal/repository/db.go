@@ -18,8 +18,8 @@ CREATE TABLE room_types (
 	id           TEXT PRIMARY KEY,
 	name         TEXT NOT NULL,
 	capacity     INTEGER NOT NULL,
-	weekday_rate REAL NOT NULL,
-	weekend_rate REAL NOT NULL
+	weekday_rate INTEGER NOT NULL,
+	weekend_rate INTEGER NOT NULL
 );
 CREATE TABLE rooms (
 	id      INTEGER PRIMARY KEY,
@@ -32,7 +32,7 @@ CREATE TABLE bookings (
 	guest_name TEXT NOT NULL,
 	check_in   TEXT NOT NULL,
 	check_out  TEXT NOT NULL,
-	total      REAL NOT NULL,
+	total      INTEGER NOT NULL,
 	status     TEXT NOT NULL,
 	created_at TEXT NOT NULL
 );
@@ -40,15 +40,15 @@ CREATE TABLE payments (
 	id         INTEGER PRIMARY KEY,
 	booking_id INTEGER NOT NULL REFERENCES bookings(id),
 	kind       TEXT NOT NULL,
-	amount     REAL NOT NULL,
+	amount     INTEGER NOT NULL,
 	created_at TEXT NOT NULL
 );
 CREATE TABLE revenue_reports (
 	date     TEXT PRIMARY KEY,
-	charges  REAL NOT NULL,
-	refunds  REAL NOT NULL,
-	net      REAL NOT NULL,
-	vat      REAL NOT NULL,
+	charges  INTEGER NOT NULL,
+	refunds  INTEGER NOT NULL,
+	net      INTEGER NOT NULL,
+	vat      INTEGER NOT NULL,
 	payments INTEGER NOT NULL
 );
 `

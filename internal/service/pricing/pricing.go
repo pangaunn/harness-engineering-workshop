@@ -2,13 +2,13 @@
 package pricing
 
 import (
-	"math"
 	"time"
 
 	"github.com/pangaunn/harness-engineering-workshop/internal/model"
 )
 
-const VATRate = 0.07
+// VATPercent is the VAT rate included in every price.
+const VATPercent = 7
 
 // Quote prices a stay in a room type. Friday and Saturday nights use the
 // weekend rate.
@@ -19,14 +19,12 @@ func Quote(rt model.RoomType, checkIn, checkOut model.Date) model.Quote {
 		if n.Weekend {
 			n.Rate = rt.WeekendRate
 		}
-		n.VAT = roundSatang(n.Rate * VATRate)
+		n.VAT = vat(n.Rate)
 		q.Nights = append(q.Nights, n)
 		q.Subtotal += n.Rate
 		q.VAT += n.VAT
 	}
-	q.Subtotal = roundSatang(q.Subtotal)
-	q.VAT = roundSatang(q.VAT)
-	q.Total = roundSatang(q.Subtotal + q.VAT)
+	q.Total = q.Subtotal + q.VAT
 	return q
 }
 
@@ -35,6 +33,7 @@ func isWeekend(d model.Date) bool {
 	return wd == time.Friday || wd == time.Saturday
 }
 
-func roundSatang(baht float64) float64 {
-	return math.Round(baht*100) / 100
+// vat is the VAT on one night's rate, rounded half-up to the satang.
+func vat(rate model.Money) model.Money {
+	return (rate*VATPercent + 50) / 100
 }

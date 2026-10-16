@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"math"
 	"testing"
 	"time"
 
@@ -24,7 +23,7 @@ func TestRevenueReport_Run(t *testing.T) {
 	payments := payment.New(repository.NewPayments(db), func() time.Time { return now })
 	reports := report.New(repository.NewRevenueReports(db))
 
-	for i, amount := range []float64{3103.00, 2299.70, 7755.10} {
+	for i, amount := range []model.Money{310300, 229970, 775510} {
 		if _, err := payments.Charge(ctx, int64(i+1), amount); err != nil {
 			t.Fatal(err)
 		}
@@ -33,7 +32,7 @@ func TestRevenueReport_Run(t *testing.T) {
 		t.Fatal(err)
 	}
 	now = now.AddDate(0, 0, 1)
-	if _, err := payments.Charge(ctx, 4, 1979.50); err != nil {
+	if _, err := payments.Charge(ctx, 4, 197950); err != nil {
 		t.Fatal(err)
 	}
 
@@ -51,15 +50,15 @@ func TestRevenueReport_Run(t *testing.T) {
 	}
 	for _, c := range []struct {
 		field     string
-		got, want float64
+		got, want model.Money
 	}{
-		{"charges", got.Charges, 13157.80},
-		{"refunds", got.Refunds, 7755.10},
-		{"net", got.Net, 5402.70},
-		{"vat", got.VAT, 353.45},
+		{"charges", got.Charges, 1315780},
+		{"refunds", got.Refunds, 775510},
+		{"net", got.Net, 540270},
+		{"vat", got.VAT, 35345},
 	} {
-		if math.Abs(c.got-c.want) > 0.001 {
-			t.Errorf("%s: got %.2f, want %.2f", c.field, c.got, c.want)
+		if c.got != c.want {
+			t.Errorf("%s: got %s, want %s", c.field, c.got, c.want)
 		}
 	}
 }

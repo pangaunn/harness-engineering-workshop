@@ -15,7 +15,7 @@ func NewRoomTypes(db *sql.DB) *RoomTypes { return &RoomTypes{db: db} }
 const roomTypeColumns = `id, name, capacity, weekday_rate, weekend_rate`
 
 func (r *RoomTypes) List(ctx context.Context) ([]model.RoomType, error) {
-	rows, err := r.db.QueryContext(ctx, `SELECT `+roomTypeColumns+`, ROUND(MIN(weekday_rate, weekend_rate) * 107 / 100, 2)
+	rows, err := r.db.QueryContext(ctx, `SELECT `+roomTypeColumns+`, (MIN(weekday_rate, weekend_rate) * 107 + 50) / 100
 		FROM room_types ORDER BY weekday_rate`)
 	if err != nil {
 		return nil, err

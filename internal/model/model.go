@@ -7,14 +7,14 @@ import "time"
 var HotelTime = time.FixedZone("ICT", 7*60*60)
 
 type RoomType struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	Capacity    int     `json:"capacity"`
-	WeekdayRate float64 `json:"weekday_rate"`
-	WeekendRate float64 `json:"weekend_rate"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Capacity    int    `json:"capacity"`
+	WeekdayRate Money  `json:"weekday_rate"`
+	WeekendRate Money  `json:"weekend_rate"`
 	// FromPrice is the lowest nightly price including VAT, for the rooms
 	// page. Only RoomTypes.List fills it.
-	FromPrice float64 `json:"from_price"`
+	FromPrice Money `json:"from_price"`
 }
 
 type Room struct {
@@ -36,7 +36,7 @@ type Booking struct {
 	GuestName string        `json:"guest_name"`
 	CheckIn   Date          `json:"check_in"`
 	CheckOut  Date          `json:"check_out"`
-	Total     float64       `json:"total"`
+	Total     Money         `json:"total"`
 	Status    BookingStatus `json:"status"`
 	CreatedAt time.Time     `json:"created_at"`
 }
@@ -52,15 +52,15 @@ type Payment struct {
 	ID        int64       `json:"id"`
 	BookingID int64       `json:"booking_id"`
 	Kind      PaymentKind `json:"kind"`
-	Amount    float64     `json:"amount"`
+	Amount    Money       `json:"amount"`
 	CreatedAt time.Time   `json:"created_at"`
 }
 
 type NightPrice struct {
-	Date    Date    `json:"date"`
-	Weekend bool    `json:"weekend"`
-	Rate    float64 `json:"rate"`
-	VAT     float64 `json:"vat"`
+	Date    Date  `json:"date"`
+	Weekend bool  `json:"weekend"`
+	Rate    Money `json:"rate"`
+	VAT     Money `json:"vat"`
 }
 
 type Quote struct {
@@ -68,17 +68,17 @@ type Quote struct {
 	CheckIn    Date         `json:"check_in"`
 	CheckOut   Date         `json:"check_out"`
 	Nights     []NightPrice `json:"nights"`
-	Subtotal   float64      `json:"subtotal"`
-	VAT        float64      `json:"vat"`
-	Total      float64      `json:"total"`
+	Subtotal   Money        `json:"subtotal"`
+	VAT        Money        `json:"vat"`
+	Total      Money        `json:"total"`
 	RoomsLeft  int          `json:"rooms_left"`
 }
 
 type RevenueReport struct {
-	Date     Date    `json:"date"`
-	Charges  float64 `json:"charges"`
-	Refunds  float64 `json:"refunds"`
-	Net      float64 `json:"net"`
-	VAT      float64 `json:"vat"`
-	Payments int     `json:"payments"`
+	Date     Date  `json:"date"`
+	Charges  Money `json:"charges"`
+	Refunds  Money `json:"refunds"`
+	Net      Money `json:"net"`
+	VAT      Money `json:"vat"`
+	Payments int   `json:"payments"`
 }

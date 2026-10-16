@@ -3,7 +3,6 @@ package jobs
 
 import (
 	"context"
-	"math"
 
 	"github.com/pangaunn/harness-engineering-workshop/internal/model"
 	"github.com/pangaunn/harness-engineering-workshop/internal/service/payment"
@@ -21,7 +20,7 @@ func (j *RevenueReport) Run(ctx context.Context, date model.Date) (model.Revenue
 	if err != nil {
 		return model.RevenueReport{}, err
 	}
-	var charges, refunds float64
+	var charges, refunds model.Money
 	for _, p := range payments {
 		switch p.Kind {
 		case model.Charge:
@@ -33,15 +32,20 @@ func (j *RevenueReport) Run(ctx context.Context, date model.Date) (model.Revenue
 	net := charges - refunds
 	r := model.RevenueReport{
 		Date:     date,
-		Charges:  round2(charges),
-		Refunds:  round2(refunds),
-		Net:      round2(net),
-		VAT:      round2(net * 7 / 107), // prices include 7% VAT
+		Charges:  charges,
+		Refunds:  refunds,
+		Net:      net,
+		VAT:      includedVAT(net),
 		Payments: len(payments),
 	}
 	return r, j.Reports.Save(ctx, r)
 }
 
-func round2(v float64) float64 {
-	return math.Round(v*100) / 100
+// includedVAT is the 7% VAT contained in a VAT-inclusive amount, rounded
+// half away from zero to the satang.
+func includedVAT(m model.Money) model.Money {
+	if m < 0 {
+		return -includedVAT(-m)
+	}
+	return (m*7*2 + 107) / (107 * 2)
 }

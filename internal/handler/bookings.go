@@ -73,7 +73,7 @@ func (h *handler) createBooking(w http.ResponseWriter, r *http.Request) {
 
 type cancelResponse struct {
 	model.Booking
-	Refunded float64 `json:"refunded"`
+	Refunded model.Money `json:"refunded"`
 }
 
 func (h *handler) cancelBooking(w http.ResponseWriter, r *http.Request) {

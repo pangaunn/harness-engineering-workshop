@@ -22,7 +22,7 @@ func New(payments *repository.Payments, now func() time.Time) *Service {
 	return &Service{payments: payments, now: now}
 }
 
-func (s *Service) Charge(ctx context.Context, bookingID int64, amount float64) (model.Payment, error) {
+func (s *Service) Charge(ctx context.Context, bookingID int64, amount model.Money) (model.Payment, error) {
 	return s.record(ctx, bookingID, model.Charge, amount)
 }
 
@@ -42,7 +42,7 @@ func (s *Service) On(ctx context.Context, date model.Date) ([]model.Payment, err
 	return s.payments.ListOn(ctx, date)
 }
 
-func (s *Service) record(ctx context.Context, bookingID int64, kind model.PaymentKind, amount float64) (model.Payment, error) {
+func (s *Service) record(ctx context.Context, bookingID int64, kind model.PaymentKind, amount model.Money) (model.Payment, error) {
 	return s.payments.Create(ctx, model.Payment{
 		BookingID: bookingID,
 		Kind:      kind,

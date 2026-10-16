@@ -41,15 +41,15 @@ func TestReserve_ChargesQuotedTotal(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if b.Total != 7755.10 {
-		t.Errorf("total: got %.2f, want 7755.10", b.Total)
+	if b.Total != 775510 {
+		t.Errorf("total: got %s, want 7755.10", b.Total)
 	}
 	charge, err := payments.ChargeFor(ctx, b.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if charge.Amount != b.Total {
-		t.Errorf("charged %.2f, want %.2f", charge.Amount, b.Total)
+		t.Errorf("charged %s, want %s", charge.Amount, b.Total)
 	}
 }
 
