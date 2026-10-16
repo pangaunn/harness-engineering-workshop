@@ -12,7 +12,7 @@ cd "$(git rev-parse --show-toplevel)"
 
 rules=internal/archtest/rules.go
 golden=internal/handler/testdata/golden
-protected="Makefile scripts internal/archtest/arch_test.go .github"
+protected="Makefile scripts .github internal/archtest :(exclude)internal/archtest/rules.go"
 
 # allowed_map prints the `allowed` map without comments or whitespace.
 allowed_map() {

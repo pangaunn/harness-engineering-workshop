@@ -35,13 +35,13 @@ Details and reasoning: [docs/architecture.md](docs/architecture.md). `make check
    coordinates several domains for one use case. Logic that two aggregates share goes into a
    domain both import.
 2. **Register it** in `layers` in `internal/archtest/rules.go`, and name it in the rules above
-   and in [docs/architecture.md](docs/architecture.md).
+   and in [docs/architecture.md](docs/architecture.md). `make check` fails until both name it.
 3. **Test it.** Unit tests next to the code. A new endpoint also gets an integration test in its
    own test function (like `internal/handler/api_golden_integration_test.go`) with new golden files.
 
 The rules may grow; only a human may loosen them. `make check` fails when `allowed` in
-`rules.go` changed, an existing golden file changed, or `Makefile`, `scripts/`,
-`internal/archtest/arch_test.go` or `.github/` changed. If a rule blocks what you think is the
+`rules.go` changed, an existing golden file changed, or `Makefile`, `scripts/`, `.github/` or
+`internal/archtest/` (other than `layers` in `rules.go`) changed. If a rule blocks what you think is the
 right design, stop and ask instead of editing the rule.
 
 ## Workflow
