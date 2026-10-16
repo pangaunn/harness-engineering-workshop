@@ -204,493 +204,325 @@ body.presenter #presenter {
 .p-label { font: 600 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: #8E8C84; margin-bottom: -10px; }
 .p-notes { flex: 1; overflow: auto; background: #1E1E1C; border-radius: 10px; padding: 20px 24px; font: 400 19px/1.55 var(--sans); color: #E6E4DB; }
 .p-notes .none { color: #6E6D67; }
+
+.xdense .body { font-size: 18px; }
+.xdense h2 { font-size: 38px; margin-bottom: 18px; }
+.xdense pre { font-size: 14px; line-height: 1.45; padding: 12px 18px; }
+.xdense .prompt { font-size: 20px; }
+.dense .prompt { font-size: 21px; padding: 14px 20px 16px; }
+.body pre, .body table, .body .prompt, .body svg { margin-top: 14px; }
+.body li > pre { margin-top: 8px; }
+.body li ul, .body li ol { margin-top: 4px; }
+.cols-code { grid-template-columns: 1.75fr 1fr; gap: 24px; margin-top: 10px; }
+.cols-code pre { font-size: 11.5px; line-height: 1.36; padding: 12px 16px; }
+.cols-code ul { margin-top: 14px; font-size: 18px; }
+.file { font: 600 13px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--clay-d); margin-bottom: 8px; }
+.file span { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--cloud); }
+.diagram { width: 100%; height: 300px; display: block; }
+.diagram .bx { fill: var(--oat); stroke: var(--line); stroke-width: 1.5; }
+.diagram .bt { font: 600 19px var(--mono); fill: var(--slate); text-anchor: middle; }
+.diagram .bs { font: 400 12.5px var(--sans); fill: var(--cloud); text-anchor: middle; }
+.diagram .ar { stroke: var(--cloud); stroke-width: 1.6; }
+.diagram .ah { fill: var(--cloud); }
 </style>
 </head>
 <body>
 
 <div id="viewport"><main id="deck">
 
-<!-- ============ Part 0 · Opening ============ -->
-
 <section class="slide cover" data-part="">
-  <h1>Harness Engineering Workshop</h1>
-  <p class="body" style="font-size:30px;margin-top:28px;font-family:var(--serif);color:var(--slate-2)">Same task, with and without a harness.</p>
-  <p class="body" style="margin-top:auto;font-size:20px"><code>github.com/pangaunn/harness-engineering-workshop</code></p>
+  <h1>Harness Engineering for Code Maintenance</h1><p class="body" style="font-size:30px;margin-top:28px;font-family:var(--serif);color:var(--slate-2)">Same task, with and without a harness</p><p class="body" style="margin-top:auto;font-size:20px">Repo: <code>github.com/pangaunn/harness-engineering-workshop</code></p>
 </section>
 
 <section class="slide" data-part="Opening">
-  <p class="callout" style="border:0;padding:0;margin:auto 0 0;font-size:48px">Inspired by <strong>Learn Harness Engineering</strong><br>by WalkingLab</p>
-  <p class="body" style="margin:28px 0 auto"><code>github.com/walkinglabs/learn-harness-engineering</code></p>
+  <h2>Credit</h2>
+  <div class="body"><ul><li>Inspired by <strong>Learn Harness Engineering</strong> by WalkingLab</li><li><code>github.com/walkinglabs/learn-harness-engineering</code></li></ul></div>
 </section>
 
-<section class="slide" data-part="Opening">
+<section class="slide xdense" data-part="Opening">
   <h2>Agenda</h2>
-  <div class="body">
-    <ul>
-      <li>What and why: harness engineering</li>
-      <li><strong>Round 1</strong> · Verification <span style="color:var(--cloud)">· split: half with, half without</span></li>
-      <li><strong>Round 2</strong> · Architecture rules <span style="color:var(--cloud)">· build your own harness</span></li>
-      <li><strong>Round 3</strong> · Scope and “done” <span style="color:var(--cloud)">· add to your harness</span></li>
-      <li><strong>Wrap-up</strong> · compare, audit your own repo</li>
-      <li style="color:var(--cloud)">Backup: Round 4 · Extending the architecture, if time is left</li>
-    </ul>
-  </div>
+  <div class="body"><ul><li>What and why: harness engineering</li><li><p>One app, maintained over the rounds:</p>
+<ul><li><strong>Round 1</strong> · Migration · <em>Verification</em>: did the agent run everything? · split: half with, half without</li><li><strong>Round 2</strong> · Feature · <em>Architecture rules</em>: did the code land in the right place? · build your own harness</li><li><strong>Round 3</strong> · Bug fix · <em>Workflow</em>: red → green → refactor, did a test fail before the fix? · add to your harness</li></ul></li><li><strong>Wrap-up</strong> · compare, audit your own repo</li><li>Backup: <strong>Round 4</strong> · Bigger feature · <em>Growing the architecture</em>: who may change the rules? · if time is left</li></ul></div>
 </section>
 
-<section class="slide dense" data-part="Opening">
+<section class="slide" data-part="Opening">
   <h2>What is harness engineering?</h2>
-  <div class="body">
-    <ul>
-      <li>A <strong>harness</strong> is everything in the repo around the model: instructions, docs, tests, checks, CI, error messages.</li>
-      <li>You can’t change the model. <strong>You can change the harness.</strong></li>
-      <li>Today: a harness for <strong>maintenance</strong>. An agent can only follow a rule it can check. When the repo verifies its own rules, the agent can work alone and fix its own mistakes.</li>
-    </ul>
-    <p style="margin-top:18px">Five subsystems of a harness <span style="color:var(--cloud)">(from Learn Harness Engineering)</span>; today’s are dark:</p>
-    <div class="pill-row">
-      <span class="pill on">instructions</span><span class="pill">state</span><span class="pill on">verification</span><span class="pill on">scope</span><span class="pill">session lifecycle</span><span class="pill on">+ architecture rules</span>
-    </div>
-  </div>
-  <p class="callout sm">Markdown explains a rule. Code enforces it. The error message re-teaches it.</p>
+  <div class="body"><ul><li>A <strong>harness</strong> is everything in the repo around the model: instructions, docs, tests, checks, CI, error messages.</li><li>You can't change the model. <strong>You can change the harness.</strong></li><li>Today: a harness for <strong>maintenance</strong>. An agent can only follow a rule it can check. When the repo verifies its own rules, the agent can work alone and fix its own mistakes.</li><li>Five subsystems of a harness (from Learn Harness Engineering): <strong>instructions, state, verification, scope, session lifecycle</strong>. Today's three are highlighted.</li></ul></div><p class="callout sm">Markdown explains a rule. Code enforces it. The error message re-teaches it.</p>
 </section>
 
 <section class="slide" data-part="Opening">
   <h2>Why a harness?</h2>
-  <div class="body">
-    <ul>
-      <li>Models keep getting better. They still say “done” when they aren’t.</li>
-      <li>A better model writes more code, faster, so there’s more for you to check.</li>
-      <li>Reading every line doesn’t scale. <strong>The repo has to check the work, not you.</strong></li>
-    </ul>
-  </div>
-  <p class="callout" style="font-size:40px">Stop trusting. Start verifying.</p>
+  <div class="body"><ul><li>Models keep getting better. They still say "done" when they aren't.</li><li>A better model writes more code, faster, so there's more for you to check.</li><li>Reading every line doesn't scale. <strong>The repo has to check the work, not you.</strong></li></ul></div><p class="callout sm">Stop trusting. Start verifying.</p>
 </section>
 
 <section class="slide dense" data-part="Opening">
   <h2>Different work, different harness</h2>
-  <div class="body">
-    <table>
-      <tr><th></th><th>Maintenance (today)</th><th>Load / performance work</th></tr>
-      <tr><td>“Done” means</td><td>Tests pass, rules hold, small diff</td><td>Meets a latency / throughput target</td></tr>
-      <tr><td>Check</td><td><code>make check</code>, archtest</td><td>A load-test command with fixed settings</td></tr>
-      <tr><td>Gate</td><td>CI fails on a broken rule</td><td>CI fails if p95 gets worse than the baseline</td></tr>
-      <tr><td>Context</td><td>Architecture docs</td><td>Baseline numbers, test environment, what “worse” means</td></tr>
-    </table>
-  </div>
-  <p class="callout">Same model, different harness, because “done” changed.</p>
+  <div class="body"><table><tr><th></th><th>Maintenance (today)</th><th>Load / performance work</th></tr><tr><td>"Done" means</td><td>Tests pass, rules hold, small diff</td><td>Meets a latency / throughput target</td></tr><tr><td>Check</td><td><code>make check</code>, archtest</td><td>A load-test command with fixed settings</td></tr><tr><td>Gate</td><td>CI fails on a broken rule</td><td>CI fails if p95 gets worse than the baseline</td></tr><tr><td>Context</td><td>Architecture docs</td><td>Baseline numbers, test environment, what "worse" means</td></tr></table></div><p class="callout sm">Same model, different harness, because "done" changed.</p>
 </section>
 
 <section class="slide" data-part="Opening">
   <h2>The app</h2>
-  <div class="body">
-    <ul>
-      <li>Hotel booking API in Go, standard library, SQLite, no Docker.</li>
-      <li><code>handler → service → repository</code>, plus <code>model</code> and <code>jobs</code>.</li>
-      <li>5 endpoints: rooms, quotes, bookings, cancel, revenue report.</li>
-    </ul>
-  </div>
-  <p class="callout">You don’t need to know Go well.<br>The agent writes the code; you build the harness.</p>
+  <div class="body"><ul><li>Hotel booking API in Go, standard library, SQLite, no Docker.</li><li><code>handler → service → repository</code>, plus <code>model</code> and <code>jobs</code>.</li><li>5 endpoints: rooms, quotes, bookings, cancel, revenue report.</li><li>You don't need to know Go well. The agent writes the code; you build the harness.</li></ul></div>
 </section>
 
-<section class="slide dense" data-part="Opening">
-  <h2>Branch map</h2>
-  <div class="body">
-    <table>
-      <tr><th>Branch</th><th>When you use it</th></tr>
-      <tr><td><code>main</code></td><td>Instructions only (<code>WORKSHOP.md</code>, <code>PREWORK.md</code>)</td></tr>
-      <tr><td><code>r1-without</code> / <code>r1-with</code></td><td>Round 1: the facilitator tells you which one</td></tr>
-      <tr><td><code>r2-without</code></td><td>Round 2, step 1: run without a harness</td></tr>
-      <tr><td><code>r2-kit</code></td><td>Round 2, step 2: starter kit for your harness</td></tr>
-      <tr><td><code>r2-with</code></td><td>Round 2, step 4: our harness, to compare</td></tr>
-      <tr><td><code>r3-without</code> / <code>r3-with</code></td><td>Round 3, step 1 / step 4: compare</td></tr>
-      <tr><td><code>r4-without</code> / <code>r4-with</code></td><td>Round 4, step 1 / step 4: compare</td></tr>
-      <tr><td><code>r2-mine</code>, <code>r3-mine</code>, <code>r4-mine</code></td><td><strong>Your</strong> harness, on your laptop only</td></tr>
-    </table>
-    <p style="margin-top:20px">Keep <strong><code>WORKSHOP.md</code> open in a browser</strong> (GitHub, <code>main</code> branch). The round branches don’t contain it.</p>
-  </div>
+<section class="slide dense xdense" data-part="Opening">
+  <h2>The big picture</h2>
+  <div class="body"><svg class="diagram" viewBox="0 -2 1080 350" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs><line x1="500" y1="58" x2="500" y2="105" class="ar" marker-end="url(#ah)"/><line x1="330" y1="58" x2="120.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="650" y1="58" x2="740.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="720" y1="58" x2="930.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="880" y1="58" x2="790.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="970" y1="58" x2="980.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="410" y1="149" x2="150.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="440" y1="149" x2="340.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="540" y1="149" x2="560.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="590" y1="149" x2="720.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="460" y1="149" x2="460" y2="300" class="ar" marker-end="url(#ah)"/><line x1="120.0" y1="244" x2="380" y2="300" class="ar" marker-end="url(#ah)"/><line x1="360.0" y1="244" x2="420" y2="300" class="ar" marker-end="url(#ah)"/><line x1="760.0" y1="244" x2="660" y2="300" class="ar" marker-end="url(#ah)"/><line x1="960.0" y1="244" x2="720" y2="300" class="ar" marker-end="url(#ah)"/><line x1="750" y1="322" x2="880" y2="322" class="ar" marker-end="url(#ah)"/><rect x="250" y="0" width="500" height="58" rx="10" class="bx"/><text x="500.0" y="24" class="bt">handler</text><text x="500.0" y="44" class="bs">/rooms · /quotes · /bookings · /bookings/{id}/cancel · /reports/revenue</text><rect x="820" y="0" width="220" height="58" rx="10" class="bx"/><text x="930.0" y="24" class="bt">jobs</text><text x="930.0" y="44" class="bs">nightly revenue report</text><rect x="400" y="105" width="200" height="44" rx="10" class="bx"/><text x="500.0" y="134.0" class="bt">booking</text><rect x="40" y="200" width="160" height="44" rx="10" class="bx"/><text x="120.0" y="229.0" class="bt">room</text><rect x="240" y="200" width="200" height="44" rx="10" class="bx"/><text x="340.0" y="229.0" class="bt">availability</text><rect x="480" y="200" width="160" height="44" rx="10" class="bx"/><text x="560.0" y="229.0" class="bt">pricing</text><rect x="680" y="200" width="160" height="44" rx="10" class="bx"/><text x="760.0" y="229.0" class="bt">payment</text><rect x="880" y="200" width="160" height="44" rx="10" class="bx"/><text x="960.0" y="229.0" class="bt">report</text><rect x="330" y="300" width="420" height="44" rx="10" class="bx"/><text x="540.0" y="329.0" class="bt">repository</text><rect x="880" y="300" width="160" height="44" rx="10" class="bx"/><text x="960.0" y="329.0" class="bt">SQLite</text></svg>
+<ul><li>Arrows are imports, as the code is <strong>today</strong> (<code>r1-without</code>).</li><li><code>model</code> holds plain structs that every package uses (left out of the picture). <code>cmd/server</code> wires everything together and starts the nightly job.</li><li>One app, four rounds: you'll maintain this same code all session.</li></ul></div>
+</section>
+
+<section class="slide dense xdense" data-part="Opening">
+  <h2>How the rounds run</h2>
+  <div class="body"><pre>R1  r1-without | r1-with                (split: half the room each)
+        │ our R1 result
+R2  r2-without ─► r2-mine ─► compare with r2-with      your harness starts from r2-kit
+        │ our R2 result
+R3  r3-without ─► r3-mine ─► compare with r3-with      + your r2-mine harness
+        │ our R3 result
+R4  r4-without ─► r4-mine ─► compare with r4-with      + your r3-mine harness</pre>
+<ul><li><strong>The code resets each round; your harness carries over.</strong> Every round starts from our result of the previous round, so everyone has the same code.</li><li>Rounds 2–4, four steps: <strong>1. run</strong> on <code>without</code> · <strong>2. build</strong> your harness · <strong>3. rerun</strong> the same prompt · <strong>4. compare</strong> with ours.</li><li><strong>Commit your harness at the end of every round</strong> (<code>r2-mine</code>, <code>r3-mine</code>, …). It's what you bring to the next one.</li><li>Keep <strong><code>WORKSHOP.md</code> open in a browser</strong> (GitHub, <code>main</code> branch). The round branches don't contain it.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Opening">
   <h2>Rules for every run</h2>
-  <div class="body" style="font-size:24px">
-    <ol>
-      <li>Clean tree: <code>git status</code> shows nothing to commit.</li>
-      <li><strong>Fresh</strong> agent session, in the repo root.</li>
-      <li>Paste the prompt <strong>exactly</strong>. Add nothing.</li>
-      <li>Agent asks a question → reply only <code>Use your best judgment.</code></li>
-      <li>Agent says done → <strong>stop</strong>. Don’t ask for fixes. Report it on the scorecard form (QR).</li>
-      <li>Same agent tool for the whole round.</li>
-    </ol>
-  </div>
+  <div class="body"><ol><li>Clean tree: <code>git status</code> shows nothing to commit.</li><li><strong>Fresh</strong> agent session, in the repo root.</li><li>Paste the prompt <strong>exactly</strong>. Add nothing.</li><li>Agent asks a question → reply only <code>Use your best judgment.</code></li><li>Agent says done → <strong>stop</strong>. Don't ask for fixes.</li><li>Same agent tool for the whole round.</li></ol></div>
 </section>
 
 <section class="slide" data-part="Opening">
   <h2>Git cheat sheet</h2>
-  <div class="body">
-<pre>git reset --hard &amp;&amp; git clean -fd      <span class="c"># throw away the agent's changes</span>
-git switch -c r2-mine                  <span class="c"># start your own harness branch</span>
-git checkout origin/r2-kit -- .        <span class="c"># pull in the round 2 kit</span>
+  <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd      # throw away the agent's changes
+git switch -c r2-mine                  # start your own harness branch
+git checkout origin/r2-kit -- .        # pull in the round 2 kit
 git add -A &amp;&amp; git commit -m "our harness"
 
-<span class="c"># rounds 3 and 4: bring your harness from the previous round</span>
+# rounds 3 and 4: bring your harness from the previous round
 git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
-    <p style="color:var(--cloud);font-size:20px">Keep this slide up, or print it.</p>
-  </div>
+<p>Keep this slide up, or print it.</p></div>
 </section>
-
-<!-- ============ Part 1 · Round 1 ============ -->
 
 <section class="slide" data-part="Round 1 · Verification">
   <h2>Round 1 · Verification</h2>
-  <div class="body">
-    <ul>
-      <li>Format: <strong>split</strong>. Half the room on <code>r1-with</code>, half on <code>r1-without</code>.</li>
-      <li>Same prompt, same time.</li>
-    </ul>
-  </div>
-  <div class="cols" style="margin-top:44px">
-    <div class="step"><i>Left half</i><small style="font-size:22px"><code>r1-with</code></small></div>
-    <div class="step"><i>Right half</i><small style="font-size:22px"><code>r1-without</code></small></div>
-  </div>
+  <div class="body"><ul><li>Format: <strong>split</strong>. Half the room on <code>r1-with</code>, half on <code>r1-without</code>.</li><li>Same prompt, same time.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Round 1 · Verification">
   <h2>Predict</h2>
-  <p class="callout" style="font-size:44px;border:0;padding:0;margin:0">Before you start: will the agent say it’s done while tests are failing?</p>
-  <div class="pill-row" style="margin-top:44px"><span class="pill" style="font-size:24px;padding:14px 28px">✋ Yes</span><span class="pill" style="font-size:24px;padding:14px 28px">✋ No</span></div>
+  <div class="body"><ul><li>Before you start: will the agent run <strong>every</strong> test in the repo before it says it's done?</li><li>Raise a hand: yes / no.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Round 1 · Verification">
   <h2>Round 1 prompt</h2>
-  <div class="body">
-<pre>git checkout r1-with        <span class="c"># or r1-without</span></pre>
-    <div class="prompt" style="margin-top:22px">Migrate all money values from float64 to the Money type (int64 satang) defined in internal/model.</div>
-  </div>
+  <div class="body"><pre>git checkout r1-with        # or r1-without</pre>
+<div class="prompt">Migrate all money values from float64 to the Money type (int64 satang) defined in internal/model.</div></div>
 </section>
 
 <section class="slide" data-part="Round 1 · Verification">
-  <h2>Report</h2>
-  <div class="with-qr">
-    <div class="body">
-      <ul>
-        <li>Scorecard: scan the QR (Google Form).</li>
-        <li>Tests pass? False “done” claims? Files touched? Human interventions?</li>
-      </ul>
-      <p style="margin-top:26px">Then:</p>
-<pre>git reset --hard &amp;&amp; git clean -fd</pre>
-    </div>
-    <div class="qr-card" data-qr></div>
-  </div>
+  <h2>Check your run</h2>
+  <div class="body"><ul><li>Run <code>go test -tags integration ./...</code> yourself: do all tests pass?</li><li>Read the agent's log: did it run <code>make check</code> or <code>go test -tags integration</code> before saying done?</li><li>Then: <code>git reset --hard &amp;&amp; git clean -fd</code></li></ul></div>
 </section>
 
 <section class="slide" data-part="Round 1 · Verification">
   <h2>Reveal: Round 1</h2>
-  <div class="body">
-    <p>The only difference between the branches:</p>
-    <div class="prompt" data-label="From AGENTS.md on r1-with" style="margin-top:14px">You are not done until <code>make check</code> passes. Paste its final output in your final message.<br>Never say tests pass unless you ran them in this session.</div>
-    <p>plus a <code>Makefile</code> that runs everything, and CI that runs the same command.</p>
-  </div>
+  <div class="body"><ul><li><p>The only difference between the branches, this rule in <code>AGENTS.md</code>:</p>
+<pre>You are not done until `make check` passes. Paste its final output in your final message.
+Never say tests pass unless you ran them in this session.</pre>
+<p>plus a <code>Makefile</code> that runs everything, including the API golden tests (<code>-tags integration</code>) that <code>go test ./...</code> skips, and CI that runs the same command.</p></li></ul></div>
 </section>
 
-<!-- ============ Part 2 · Round 2 ============ -->
+<section class="slide dense xdense" data-part="Round 2 · Architecture rules">
+  <h2>Round 2 · What's new since Round 1</h2>
+  <div class="body"><ul><li><code>r2-without</code> = <code>r1-without</code> + <strong>our R1 migration</strong> (money is <code>Money</code>) + <strong>our R1 harness</strong>:</li></ul><div class="cols cols-code"><div><div class="file">AGENTS.md <span>(CLAUDE.md: <code>@AGENTS.md</code>)</span></div><pre># AGENTS.md
+Hotel booking API in Go: standard library `net/http`, SQLite via `modernc.org/sqlite` (no cgo).
+Layered as handler → service → repository. Amounts are Thai baht and include 7% VAT.
+## Layout
+```
+cmd/server/              entry point and wiring
+internal/handler/        HTTP, JSON in/out
+internal/service/        booking, room, availability, pricing, payment, report
+internal/repository/     SQLite access, one file per table
+internal/model/          plain structs shared by every layer
+internal/jobs/           background jobs (nightly revenue report)
+```
+## Commands
+- `make check` runs gofmt, `go vet` and every test, including the integration tests
+  (`-tags integration`) that plain `go test ./...` skips. CI runs the same command.
+- `go run ./cmd/server` starts the API on `:8080`.
+## Verification
+You are not done until `make check` passes. Paste its final output in your final message.
+Never say tests pass unless you ran them in this session.</pre></div><div><div class="file">Makefile</div><pre>check: fmt vet test
+
+fmt:
+	@out=$$(gofmt -l .); if [ -n "$$out" ]; then echo "gofmt: these files need formatting (run gofmt -w .):"; echo "$$out"; exit 1; fi
+vet:
+	go vet -tags integration ./...
+test:
+	go test -tags integration ./...</pre><div class="file" style="margin-top:14px">CI <span>.github/workflows/check.yml runs <code>make check</code> on every push</span></div><ul><li>From here on, every agent runs <strong>everything</strong> before it says done.</li><li>Nothing says <strong>where code goes</strong>. That's this round.</li></ul></div></div></div>
+</section>
 
 <section class="slide" data-part="Round 2 · Architecture rules">
-  <h2>How a build round works</h2>
-  <div class="steps">
-    <div class="step"><b>1</b><i>Fail</i><small>Run the prompt on <code>r2-without</code></small></div>
-    <div class="step"><b>2</b><i>Build</i><small>Build your harness from the kit</small></div>
-    <div class="step"><b>3</b><i>Rerun</i><small>Fresh session, same tool, same prompt</small></div>
-    <div class="step"><b>4</b><i>Compare</i><small>Your harness vs ours</small></div>
-  </div>
-  <p class="callout">Your harness may describe rules and checks, <strong>never the answer.</strong></p>
+  <h2>Round 2 · Why rules about where code goes?</h2>
+  <div class="body"><ul><li>Agents copy the code they see. One shortcut becomes the pattern for the next ten changes.</li><li>A wrong import breaks no test: <code>make check</code> stays green.</li><li>Nobody spots one import line in a 300-line diff.</li><li>The bill comes later: tests suddenly need a database, import cycles, one change breaks three packages.</li><li>If the rule lives only in a senior dev's head, the agent can't follow it.</li></ul>
+<p>Example (a blog, not this app): should <code>post</code> import <code>user</code>, or should a third package use both?</p></div>
 </section>
 
-<section class="slide dense" data-part="Round 2 · Step 1 · Fail">
-  <h2>Round 2 prompt</h2>
-  <div class="with-qr">
-    <div class="body">
-<pre>git checkout r2-without</pre>
-      <div class="prompt" style="margin-top:16px;font-size:23px">Fix the bug: cancellation refunds ignore the cancellation policy. The policy is: cancelling 48 hours or more before check-in gives a 100% refund, 24 to 48 hours gives 50%, and less than 24 hours gives no refund.</div>
-      <ul style="margin-top:18px">
-        <li>Report your “before” result.</li>
-        <li>Then: which packages did the agent make import each other?</li>
-      </ul>
-    </div>
-    <div class="qr-card" data-qr></div>
-  </div>
+<section class="slide dense" data-part="Round 2 · Architecture rules">
+  <h2>Round 2 · How a build round works</h2>
+  <div class="body"><table><tr><th>Step</th><th>What</th></tr><tr><td>1. Fail</td><td>Run the prompt on <code>r2-without</code></td></tr><tr><td>2. Build</td><td>Build your harness on <code>r2-mine</code>, starting from the kit in branch <code>r2-kit</code></td></tr><tr><td>3. Rerun</td><td>Fresh session, same tool, same prompt</td></tr><tr><td>4. Compare</td><td>Your harness vs ours in <code>r2-with</code></td></tr></table></div><p class="callout sm">Your harness may describe rules and checks, never the answer.</p>
 </section>
 
-<section class="slide dense" data-part="Round 2 · Step 2 · Build">
-  <h2>Get the kit</h2>
-  <div class="body">
-<pre>git reset --hard &amp;&amp; git clean -fd
+<section class="slide" data-part="Round 2 · Architecture rules">
+  <h2>Round 2 prompt (step 1)</h2>
+  <div class="body"><pre>git checkout r2-without</pre>
+<div class="prompt">When at least 2/3 of a room type's rooms are already booked for a night, that night's rate is 20% higher. pricing.Quote should get occupancy from the availability service itself, so callers don't have to pass it in.</div>
+<ul><li>Write down your "before" result. Then <code>git diff</code>: where did the new logic go, and what does each changed package import now?</li></ul></div>
+</section>
+
+<section class="slide" data-part="Round 2 · Architecture rules">
+  <h2>Step 2 · Get the kit</h2>
+  <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd
 git switch -c r2-mine
 git checkout origin/r2-kit -- .</pre>
-    <ul style="margin-top:20px">
-      <li><code>internal/archtest/arch_test.go</code>: reads real imports with <code>go/parser</code>. You don’t need to edit it (one stretch goal does).</li>
-      <li><code>internal/archtest/rules.go</code>: <strong>empty rules. You fill these in.</strong></li>
-      <li><code>Makefile</code>: <code>make check</code></li>
-      <li><code>AGENTS.md</code>: headings only (<code>CLAUDE.md</code> points to it)</li>
-    </ul>
-  </div>
+<ul><li><code>internal/archtest/arch_test.go</code>: reads real imports with <code>go/parser</code>. You don't need to edit it (unless you're done early: the error messages live there).</li><li><code>internal/archtest/rules.go</code>: <strong>empty rules. You fill these in.</strong></li><li><code>Makefile</code>: <code>make check</code></li><li><code>AGENTS.md</code>: headings only (<code>CLAUDE.md</code> points to it)</li></ul></div>
 </section>
 
-<section class="slide dense" data-part="Round 2 · Step 2 · Build">
-  <h2>Build the rules</h2>
-  <div class="body">
-    <ol>
-      <li><code>go test ./internal/archtest/</code> → every package “not registered”.</li>
-      <li>Fill in <code>layers</code>: put every package under <code>internal/</code> into a layer.</li>
-      <li>Fill in <code>allowed</code>: which layer may import which. Run the test until it passes.</li>
-      <li>Test your rule: add an import of <code>service/pricing</code> into <code>service/payment</code>. Does it fail? Remove it again.</li>
-      <li><code>AGENTS.md</code>: one sentence per rule + “You are not done until <code>make check</code> passes.”</li>
-      <li><code>git add -A &amp;&amp; git commit -m "our harness"</code></li>
-    </ol>
-  </div>
-  <p class="callout sm"><code>make check</code> still fails on this branch: that’s the bug the agent will fix.</p>
+<section class="slide" data-part="Round 2 · Architecture rules">
+  <h2>Step 2 · Build the rules</h2>
+  <div class="body"><ol><li><code>go test ./internal/archtest/</code> → every package "not registered".</li><li>Fill in <code>layers</code>: put every package under <code>internal/</code> into a layer.</li><li>Fill in <code>allowed</code>: which layer may import which. Run the test until it passes.</li><li>Test your rule: add an import of <code>service/pricing</code> into <code>service/payment</code>. Does it fail? Remove it again.</li><li><code>AGENTS.md</code>: one sentence per rule + "You are not done until <code>make check</code> passes."</li><li><code>git add -A &amp;&amp; git commit -m "our harness"</code></li></ol>
+<ul><li><code>make check</code> still fails on this branch: that's the bug the agent will fix.</li><li><strong>Done early?</strong> Make your error message say where the logic should go instead · Try to put the logic in the wrong place in a way your rules still accept.</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 2 · Stretch goals">
-  <h2>Stretch goals</h2>
-  <div class="body">
-    <ul>
-      <li><strong>Make the error message teach:</strong> say where the logic should go instead.</li>
-      <li><strong>Read the runner:</strong> how does <code>arch_test.go</code> use <code>go/parser</code>?</li>
-      <li><strong>Beat your own rules:</strong> put the logic in the wrong place in a way your test still accepts.</li>
-    </ul>
-  </div>
+<section class="slide" data-part="Round 2 · Architecture rules">
+  <h2>Step 3 · Rerun</h2>
+  <div class="body"><ul><li>Fresh session, same tool, <strong>same prompt</strong>.</li><li>Write down your "after" result.</li><li><code>git reset --hard &amp;&amp; git clean -fd</code> (your harness commit stays).</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 2 · Step 3 · Rerun">
-  <h2>Rerun</h2>
-  <div class="with-qr">
-    <div class="body">
-      <ul>
-        <li>Fresh session, same tool, <strong>same prompt</strong>.</li>
-        <li>Report your “after” result.</li>
-      </ul>
-<pre style="margin-top:26px">git reset --hard &amp;&amp; git clean -fd   <span class="c"># your harness commit stays</span></pre>
-    </div>
-    <div class="qr-card" data-qr></div>
-  </div>
+<section class="slide" data-part="Round 2 · Architecture rules">
+  <h2>Step 4 · Compare with ours</h2>
+  <div class="body"><pre>git diff r2-mine origin/r2-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</pre>
+<ul><li>Where do your rules differ from ours?</li><li>Would ours have stopped something yours let through?</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 2 · Step 4 · Compare">
-  <h2>Compare with ours</h2>
-  <div class="body">
-<pre>git diff r2-mine origin/r2-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</pre>
-    <ul style="margin-top:26px">
-      <li>Where do your rules differ from ours?</li>
-      <li>Would ours have stopped something yours let through?</li>
-    </ul>
-  </div>
-</section>
-
-<section class="slide dense" data-part="Round 2 · Reveal">
+<section class="slide dense" data-part="Round 2 · Architecture rules">
   <h2>Reveal: Round 2</h2>
-  <div class="body">
-    <p>Our <code>allowed</code> map: the domain layer may import <code>repository</code> and <code>model</code>, <strong>not</strong> other domains. The error message the agent sees:</p>
-<pre style="margin-top:14px"><span class="k">FAIL:</span> internal/service/payment imports internal/service/pricing
+  <div class="body"><ul><li>Our <code>allowed</code> map: the domain layer may import <code>repository</code> and <code>model</code>, <strong>not</strong> other domains.</li><li><p>The error message the agent sees:</p>
+<pre>FAIL: internal/service/payment imports internal/service/pricing
   Domain services must not import each other.
   If logic needs two domains, move it into an aggregate (e.g. service/booking).
-  See docs/architecture.md#rules</pre>
-    <p>Your kit said only <em>what</em> broke. Ours also says <em>where the logic should go</em>. <strong>The error message is the one piece of the harness the agent is guaranteed to read.</strong></p>
-  </div>
-  <p class="callout sm">A sentence in a doc vs the same rule as a failing test: which one held?</p>
+  See docs/architecture.md#rules</pre></li><li><strong>A sentence in a doc vs the same rule as a failing test: which one held?</strong></li></ul>
+<ul><li>Your kit said only <em>what</em> broke. Ours also says <em>where the logic should go</em>. <strong>The error message is the one piece of the harness the agent is guaranteed to read.</strong></li></ul></div>
 </section>
 
-<!-- ============ Part 3 · Round 3 ============ -->
+<section class="slide" data-part="Round 3 · Bug fix workflow">
+  <h2>Round 3 · Why a workflow for bug fixes?</h2>
+  <div class="body"><ul><li>The bug shipped because <strong>no test covered it</strong>. "All green" after the fix proves nothing: it was all green before the fix, too.</li><li>A test written after the fix confirms the code, not the bug. Only a test that <strong>failed first</strong> shows the fix did something.</li><li>No test that fails on the bug → the next change can bring it back, and nothing notices.</li><li>"While I'm here" cleanups mixed into a fix: when something breaks, which part did it?</li><li>Red → green → refactor leaves <strong>no trace in the final diff</strong>. You can't tell from the code whether red ever happened.</li></ul>
+<p>Example (a blog, not this app): "comment counts are off by one". What's the first thing you write?</p></div>
+</section>
 
-<section class="slide dense" data-part="Round 3 · Scope and “done”">
+<section class="slide dense" data-part="Round 3 · Bug fix workflow">
   <h2>Round 3 · Step 1</h2>
-  <div class="with-qr">
-    <div class="body">
-      <p style="color:var(--cloud)">Fail · add to your harness · rerun · compare</p>
-<pre style="margin-top:14px">git checkout r3-without</pre>
-      <div class="prompt" style="margin-top:16px">Fix the bug: a guest cannot book a room starting on the day the previous guest checks out.</div>
-      <ul style="margin-top:18px">
-        <li>Report “before”.</li>
-        <li>Then <code>git diff --stat</code>: how many files did the agent touch?</li>
-      </ul>
-    </div>
-    <div class="qr-card" data-qr></div>
-  </div>
+  <div class="body"><ul><li>Steps: run · add to your harness · rerun · compare.</li><li><code>r3-without</code> = our R2 result (the busy-night surcharge) + our R2 harness.</li></ul>
+<pre>git checkout r3-without</pre>
+<div class="prompt">Fix the bug: guests are charged the 20% busy-night surcharge on nights the hotel isn't busy, e.g. a standard room on 20 Oct when only one of three standard rooms was occupied that night.</div>
+<ul><li>Write down "before". Then <code>git diff --stat</code>: which files did the agent touch? Did it add a test, and did that test fail before the fix?</li></ul></div>
 </section>
 
-<section class="slide dense" data-part="Round 3 · Step 2 · Add to your harness">
-  <h2>Add to your harness</h2>
-  <div class="body">
-<pre>git reset --hard &amp;&amp; git clean -fd
+<section class="slide dense" data-part="Round 3 · Bug fix workflow">
+  <h2>Step 2 · Add to your harness</h2>
+  <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd
 git switch -c r3-mine
-git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
-    <ul style="margin-top:18px">
-      <li>No working round 2 harness? Use ours:<br><code>git checkout origin/r2-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</code></li>
-      <li><code>make check</code> should pass here.</li>
-      <li>Add <strong>Definition of done</strong> to <code>AGENTS.md</code>: what “done” means, what <em>not</em> to touch.</li>
-      <li><code>git add -A &amp;&amp; git commit -m "our harness"</code></li>
-    </ul>
-  </div>
+git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest   # your R2 harness</pre>
+<ul><li>No working round 2 harness? Skip the last line: <code>r3-without</code> already has ours.</li><li><code>make check</code> should pass here.</li><li>Add a <strong><code>## Workflow</code></strong> section to <code>AGENTS.md</code>: red → green → refactor → done. What counts as "red"? What may "refactor" touch? Where do other findings go?</li><li>Make <code>make check</code> <strong>fail when Go code changed but no <code>_test.go</code> file did</strong>, and print the changed files.</li><li><code>git add -A &amp;&amp; git commit -m "our harness"</code></li><li><strong>Done early?</strong> Make your check fail when the changed tests also pass on the old code.</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 3 · Stretch goals">
-  <h2>Stretch goals</h2>
-  <div class="body">
-    <ul>
-      <li>Make <code>make check</code> <strong>fail when no <code>_test.go</code> file changed</strong>.</li>
-      <li>Make <code>make check</code> <strong>print the changed files</strong>.</li>
-    </ul>
-  </div>
+<section class="slide" data-part="Round 3 · Bug fix workflow">
+  <h2>Step 3 · Rerun, Step 4 · Compare</h2>
+  <div class="body"><ul><li>Fresh session, same tool, same prompt. Write down "after".</li></ul>
+<pre>git diff r3-mine origin/r3-with -- AGENTS.md CLAUDE.md Makefile scripts</pre>
+<ul><li>Which parts of your workflow are sentences an agent may ignore? Which are commands that fail?</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 3 · Steps 3 &amp; 4">
-  <h2>Rerun, then compare</h2>
-  <div class="with-qr">
-    <div class="body">
-      <p>Fresh session, same tool, same prompt. Report “after”.</p>
-<pre style="margin-top:20px">git diff r3-mine origin/r3-with -- AGENTS.md CLAUDE.md Makefile</pre>
-      <p style="margin-top:22px">Which parts of your “done” are <strong>sentences an agent may ignore</strong>? Which are <strong>commands that fail</strong>?</p>
-    </div>
-    <div class="qr-card" data-qr></div>
-  </div>
-</section>
-
-<section class="slide" data-part="Round 3 · Reveal">
+<section class="slide dense xdense" data-part="Round 3 · Bug fix workflow">
   <h2>Reveal: Round 3</h2>
-  <div class="body" style="font-size:23px">
-    <p>Our definition of done:</p>
-    <ul>
-      <li>only the files the task needs; no unrelated renames, refactors or formatting</li>
-      <li>a test that fails before and passes after</li>
-      <li><code>make check</code> passes; other findings go under <strong>Follow-ups</strong></li>
-    </ul>
-    <p>Our <code>make check</code> also <strong>fails if no test changed</strong> and <strong>prints the changed files</strong>.</p>
-  </div>
-  <p class="callout">Checkable → in the command. Judgment → in Markdown.</p>
+  <div class="body"><ul><li><p>Our workflow in <code>AGENTS.md</code>:</p>
+<pre>1. Red: write a test that shows the bug (or the new behaviour) and see it fail on the current code.
+2. Green: make the smallest change that makes it pass.
+3. Refactor: tidy only the code you changed in step 2. Tests stay green.
+4. Done: `make check` passes. List anything else you noticed under "Follow-ups" in your
+   final message instead of changing it.</pre></li><li><p>Our <code>make check</code> runs your changed tests <strong>against the old code</strong> and needs one to fail:</p>
+<pre>red-first: FAIL: Go code changed but no test did.
+red-first: FAIL: your changed tests also pass on the code at HEAD.
+  They don't reproduce the bug, so they don't prove the fix.
+red-first: ok, your changed tests fail on the code at HEAD:
+  --- FAIL: TestQuote_CheckOutNightIsNotBusy
+      booking_test.go:148: total 1861.80, want 1551.50 (1 of 3 rooms booked)</pre></li><li><strong>"A test changed" is easy to fake. "A test failed first" isn't.</strong></li><li>Checkable → in the command. Judgment (what "refactor" may touch) → in Markdown.</li></ul></div>
 </section>
 
-<!-- ============ Part 4 · Round 4 (backup) ============ -->
-
-<section class="slide dense" data-part="Round 4 · Extending the architecture" data-backup>
+<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
   <h2>Round 4 · Step 1</h2>
-  <div class="with-qr">
-    <div class="body">
-      <p style="color:var(--cloud)">Fail · add to your harness · rerun · compare</p>
-<pre style="margin-top:12px">git checkout r4-without</pre>
-      <div class="prompt" style="margin-top:14px;font-size:21px">Add group bookings: a guest can reserve 2 to 5 rooms for the same dates in one request via POST /group-bookings. Either all rooms are booked or none. Charge one combined payment. Cancelling a group booking refunds each room using the existing cancellation policy.</div>
-      <p style="margin-top:14px">Report “before”. Which new packages did the agent create? What do they import?</p>
-    </div>
-    <div class="qr-card" data-qr></div>
-  </div>
+  <div class="body"><ul><li>Steps: fail · add to your harness · rerun · compare.</li></ul>
+<pre>git checkout r4-without</pre>
+<div class="prompt">Add group bookings: a guest can reserve 2 to 5 rooms for the same dates in one request via POST /group-bookings. Either all rooms are booked or none. Charge one combined payment. Cancelling a group booking refunds each room using the existing cancellation policy.</div>
+<ul><li>Write down "before". Which new packages did the agent create? What do they import?</li></ul></div>
 </section>
 
-<section class="slide dense" data-part="Round 4 · Step 2 · Add to your harness" data-backup>
-  <h2>Add to your harness</h2>
-  <div class="body">
-<pre>git reset --hard &amp;&amp; git clean -fd
+<section class="slide dense xdense" data-part="Round 4 · Growing the architecture" data-backup>
+  <h2>Step 2 · Add to your harness</h2>
+  <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd
 git switch -c r4-mine
 git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
-    <ul style="margin-top:14px">
-      <li>No working round 3 harness?<br><code>git checkout origin/r3-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</code></li>
-      <li>Check with <code>go test ./internal/archtest/</code> (<code>make check</code> fails until the feature exists).</li>
-      <li>Answer two questions in <code>AGENTS.md</code>:
-        <ol>
-          <li>How do you add a new package? Which layer, where to register it?</li>
-          <li>What may the agent change in the harness? Registering = fine. Loosening <code>allowed</code> = not.</li>
-        </ol>
-      </li>
-      <li>Stretch: make “not registered” point to your how-to.</li>
-    </ul>
-  </div>
+<ul><li>No working round 3 harness? <code>git checkout origin/r3-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</code></li><li>Check with <code>go test ./internal/archtest/</code> (<code>make check</code> fails until the feature exists).</li><li><p>Answer two questions in <code>AGENTS.md</code>:</p>
+<ol><li>How do you add a new package? Which layer, where to register it?</li><li>What may the agent change in the harness? Registering = fine. Loosening <code>allowed</code> = not.</li></ol></li><li>Stretch: make "not registered" point to your how-to.</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 4 · Steps 3 &amp; 4" data-backup>
-  <h2>Rerun, then compare</h2>
-  <div class="with-qr">
-    <div class="body" style="font-size:23px">
-      <ul>
-        <li>Fresh session, same tool, same prompt. Report “after”.</li>
-        <li><code>git diff -- internal/archtest</code>: what did the agent change in your harness?</li>
-      </ul>
-<pre style="margin-top:20px">git diff r4-mine origin/r4-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</pre>
-    </div>
-    <div class="qr-card" data-qr></div>
-  </div>
+<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
+  <h2>Step 3 · Rerun, Step 4 · Compare</h2>
+  <div class="body"><ul><li>Fresh session, same tool, same prompt. Write down "after".</li><li><code>git diff -- internal/archtest</code>: what did the agent change in your harness?</li></ul>
+<pre>git diff r4-mine origin/r4-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs</pre></div>
 </section>
 
-<section class="slide" data-part="Round 4 · Reveal" data-backup>
+<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
   <h2>Reveal: Round 4</h2>
-  <div class="body">
-    <p>Our answer: extract the refund policy into a new domain (<code>service/cancellation</code>); both aggregates use it. Register the new packages; <code>allowed</code> unchanged.</p>
-  </div>
-  <p class="callout">Should an agent be allowed to edit its own harness?<br>Where’s the line? How would you enforce it?</p>
+  <div class="body"><ul><li>Our answer: extract the refund policy into a new domain (<code>service/cancellation</code>); both aggregates use it. Register the new packages; <code>allowed</code> unchanged.</li><li><strong>Should an agent be allowed to edit its own harness?</strong> Where's the line? How would you enforce it?</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 4" data-backup>
-  <h2>Homework</h2>
-  <p class="callout" style="border:0;padding:0;margin:0">Round 4 at home: same 4 steps, in <code>WORKSHOP.md</code>.</p>
-</section>
-
-<!-- ============ Part 5 · Wrap-up ============ -->
-
-<section class="slide" data-part="Wrap-up">
-  <h2>Scorecard results</h2>
-  <div class="body">
-    <ul>
-      <li>The sheet’s <strong>Results</strong> tab, projected: no harness vs harness, every round.</li>
-      <li>Your predictions from Round 1 (slide 12) vs what happened.</li>
-    </ul>
-  </div>
+<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
+  <h2>Homework (shown only if Round 4 was skipped)</h2>
+  <div class="body"><ul><li>Round 4 at home: same 4 steps, in <code>WORKSHOP.md</code>.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Wrap-up">
   <h2>Compare harnesses</h2>
-  <p class="callout" style="border:0;padding:0;margin:0">One pair shows their <code>r3-mine</code> (or <code>r4-mine</code>) <code>AGENTS.md</code> and <code>rules.go</code>.</p>
+  <div class="body"><ul><li>One pair shows their <code>r3-mine</code> (or <code>r4-mine</code>) <code>AGENTS.md</code> and <code>rules.go</code>.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Wrap-up">
   <h2>Audit your own repo</h2>
-  <div class="body" style="font-size:23px">
-    <ol>
-      <li><strong>Verification:</strong> one command an agent must run before “done”? Does CI run the same one?</li>
-      <li><strong>Architecture:</strong> which rules live only in people’s heads? Which could be a test?</li>
-      <li><strong>Scope:</strong> does your repo say what “done” means? Which parts could be a command?</li>
-      <li><strong>Extension:</strong> does the repo say how to add a module, and stop anyone loosening the rules?</li>
-    </ol>
-  </div>
+  <div class="body"><ol><li><strong>Verification:</strong> one command an agent must run before "done"? Does CI run the same one?</li><li><strong>Architecture:</strong> which rules live only in people's heads? Which could be a test?</li><li><strong>Scope:</strong> does your repo say what "done" means? Which parts could be a command?</li><li><strong>Extension:</strong> does the repo say how to add a module, and stop anyone loosening the rules?</li></ol></div>
 </section>
 
 <section class="slide" data-part="Wrap-up">
   <h2>Takeaways</h2>
-  <p class="callout" style="border:0;padding:0;margin:0 0 30px;font-size:36px">Markdown explains. Code enforces.<br>The error message re-teaches.</p>
-  <div class="body">
-    <ul>
-      <li>Put everything checkable into <strong>one command</strong>, and make CI run the same one.</li>
-      <li>Harnesses rot too: entropy control, scheduled cleanup agents.</li>
-      <li>Take your harness branch home.</li>
-    </ul>
-  </div>
+  <div class="body"><ul><li>Markdown explains. Code enforces. The error message re-teaches.</li><li>Put everything checkable into <strong>one command</strong>, and make CI run the same one.</li><li>Harnesses rot too: entropy control, scheduled cleanup agents.</li><li>Take your harness branch home.</li></ul></div>
 </section>
 
-<section class="slide cover" data-part="Credits">
+<section class="slide" data-part="Wrap-up">
   <h2>Credits</h2>
-  <div class="body" style="font-size:28px">
-    <p><strong>Learn Harness Engineering</strong> by WalkingLab</p>
-    <p><code>github.com/walkinglabs/learn-harness-engineering</code></p>
-    <p style="font-size:20px;color:var(--cloud)">MIT License, © 2025 WalkingLab</p>
-  </div>
-  <p class="callout" style="margin-top:auto">Go take the full course.</p>
+  <div class="body"><ul><li><strong>Learn Harness Engineering</strong> by WalkingLab: <code>github.com/walkinglabs/learn-harness-engineering</code> (MIT License, © 2025 WalkingLab). Go take the full course.</li></ul></div>
 </section>
 
 </main></div>
 
 <div id="progress"></div>
 <div id="notes-panel"></div>
-<div id="hint">← → navigate · F fullscreen · ? help</div>
+<div id="hint">← → navigate · N notes · P presenter · F fullscreen · ? help</div>
 <div id="help"><div>
   <h3>Keys</h3>
   <div><kbd>→</kbd><kbd>Space</kbd><kbd>PgDn</kbd>next</div>
   <div><kbd>←</kbd><kbd>PgUp</kbd>previous</div>
   <div><kbd>Home</kbd><kbd>End</kbd>first / last</div>
   <div><kbd>1–9</kbd> then <kbd>Enter</kbd>go to slide</div>
+  <div><kbd>N</kbd>speaker notes (this screen)</div>
+  <div><kbd>P</kbd>presenter window (notes, timer, next)</div>
   <div><kbd>F</kbd>fullscreen</div>
 </div></div>
 
@@ -712,18 +544,14 @@ git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
   </div>
 </div>
 
-<template id="qr-svg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" shape-rendering="crispEdges"><path stroke="#141413" d="M0 0.5h7m1 0h4m6 0h2m3 0h1m1 0h2m7 0h7M0 1.5h1m5 0h1m1 0h1m1 0h3m1 0h1m2 0h1m1 0h1m2 0h1m1 0h2m2 0h1m2 0h1m2 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m1 0h1m1 0h1m3 0h1m1 0h4m1 0h1m1 0h4m4 0h2m1 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m2 0h1m2 0h1m1 0h3m2 0h1m2 0h2m1 0h1m2 0h1m3 0h1m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h2m1 0h1m2 0h1m2 0h3m4 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m4 0h2m1 0h2m4 0h1m2 0h4m2 0h1m2 0h1m1 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M15 7.5h1m6 0h1m1 0h2m4 0h3M0 8.5h1m2 0h6m1 0h8m1 0h1m2 0h3m1 0h4m1 0h1m1 0h1m2 0h1m1 0h3M0 9.5h4m1 0h1m1 0h2m2 0h1m1 0h1m2 0h1m1 0h3m1 0h2m1 0h3m2 0h2m2 0h3m2 0h1M0 10.5h1m1 0h2m2 0h2m2 0h1m1 0h3m3 0h1m2 0h4m2 0h1m5 0h2m3 0h2M0 11.5h1m1 0h1m6 0h2m1 0h2m2 0h2m2 0h1m1 0h2m3 0h1m1 0h4m3 0h2m1 0h2M2 12.5h1m1 0h4m2 0h2m1 0h1m1 0h3m6 0h2m2 0h2m2 0h1m1 0h2m3 0h1M0 13.5h2m2 0h1m2 0h2m2 0h2m1 0h1m2 0h1m1 0h2m2 0h1m1 0h1m1 0h4m1 0h1m1 0h1m1 0h1m2 0h2M0 14.5h1m1 0h1m2 0h3m1 0h3m1 0h1m2 0h2m1 0h2m1 0h1m1 0h4m1 0h6m1 0h1m2 0h2M4 15.5h2m3 0h4m1 0h3m1 0h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h1m1 0h5M0 16.5h1m1 0h1m2 0h2m1 0h1m2 0h2m2 0h3m3 0h6m5 0h2m3 0h1m1 0h1M0 17.5h3m2 0h1m1 0h1m1 0h2m2 0h5m1 0h4m3 0h1m2 0h1m2 0h2m2 0h2M1 18.5h3m1 0h2m3 0h4m1 0h1m1 0h4m2 0h2m2 0h5m3 0h2m3 0h1M1 19.5h1m1 0h2m2 0h1m2 0h3m1 0h2m4 0h2m1 0h1m1 0h1m5 0h4m1 0h1m1 0h1m1 0h1M2 20.5h2m1 0h3m1 0h1m2 0h1m3 0h1m1 0h1m1 0h2m2 0h1m1 0h2m1 0h4m1 0h2m3 0h2M0 21.5h3m1 0h1m2 0h3m1 0h1m7 0h1m1 0h3m1 0h2m2 0h4m2 0h4M0 22.5h2m1 0h1m1 0h2m2 0h1m1 0h6m5 0h2m1 0h1m1 0h1m6 0h1m1 0h2M0 23.5h1m1 0h1m1 0h2m1 0h1m1 0h1m2 0h2m3 0h4m1 0h1m1 0h1m1 0h1m1 0h2m1 0h3m2 0h1m2 0h1M0 24.5h2m4 0h2m5 0h2m1 0h1m3 0h1m2 0h2m2 0h2m3 0h1m1 0h2m3 0h2M2 25.5h1m2 0h1m2 0h2m3 0h6m2 0h1m1 0h1m1 0h3m2 0h1m1 0h1m1 0h3m1 0h3M2 26.5h1m2 0h3m2 0h4m1 0h1m2 0h5m4 0h1m2 0h6m1 0h1m1 0h2M1 27.5h1m2 0h2m1 0h2m2 0h1m7 0h1m2 0h2m3 0h2m2 0h1m4 0h3M0 28.5h2m2 0h3m2 0h1m1 0h1m1 0h3m1 0h1m1 0h5m1 0h1m1 0h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h2M0 29.5h3m2 0h1m1 0h1m1 0h1m1 0h2m2 0h1m1 0h2m1 0h1m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h1m3 0h1M0 30.5h2m2 0h5m2 0h1m2 0h1m1 0h1m3 0h4m1 0h9m6 0h1M0 31.5h3m2 0h1m1 0h2m9 0h1m3 0h2m1 0h1m1 0h2m2 0h1m2 0h2m1 0h2M0 32.5h2m1 0h5m1 0h2m2 0h2m1 0h1m3 0h1m2 0h1m2 0h2m3 0h9M8 33.5h2m2 0h1m1 0h1m2 0h3m3 0h1m3 0h1m1 0h4m3 0h2m1 0h1M0 34.5h7m1 0h1m1 0h1m1 0h1m2 0h1m4 0h2m1 0h1m1 0h1m1 0h2m3 0h1m1 0h1m1 0h2M0 35.5h1m5 0h1m1 0h2m1 0h1m3 0h1m2 0h1m1 0h1m2 0h2m2 0h3m1 0h2m3 0h1m2 0h1M0 36.5h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h2m2 0h1m1 0h4m1 0h1m2 0h1m3 0h6M0 37.5h1m1 0h3m1 0h1m1 0h2m1 0h1m3 0h1m1 0h2m3 0h2m2 0h3m3 0h1m2 0h1m1 0h2m1 0h1M0 38.5h1m1 0h3m1 0h1m2 0h1m2 0h1m1 0h1m1 0h1m2 0h1m2 0h1m3 0h2m1 0h5m1 0h4m1 0h1M0 39.5h1m5 0h1m2 0h1m1 0h1m4 0h5m7 0h1m4 0h2m1 0h1m1 0h1m1 0h1M0 40.5h7m1 0h1m1 0h2m2 0h1m2 0h2m1 0h1m1 0h4m2 0h1m3 0h1m3 0h2"/></svg></template>
-
 <script>
 (() => {
-  const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSech4hBowsYHC7_3gOiQEzqCpGd9yvjRAtzyNVJ9725zbDE-Q/viewform";
   const deck = document.getElementById("deck");
   const slides = [...deck.querySelectorAll(".slide")];
   const total = slides.length;
   const isPresenter = new URLSearchParams(location.search).has("presenter");
 
-  // decorate: eyebrow, footer, QR codes
-  const qrTpl = document.getElementById("qr-svg").innerHTML;
+  // decorate: eyebrow, footer
   slides.forEach((s, i) => {
     const part = s.dataset.part;
     if (part) {
@@ -736,9 +564,6 @@ git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
     foot.className = "foot";
     foot.innerHTML = `<span>Harness Engineering Workshop</span><span>${i + 1} / ${total}</span>`;
     s.append(foot);
-  });
-  document.querySelectorAll("[data-qr]").forEach(el => {
-    el.innerHTML = `<a href="${FORM_URL}" target="_blank" rel="noopener">${qrTpl}</a><span>Scorecard form</span>`;
   });
 
   let cur = 0;
@@ -814,9 +639,13 @@ git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest</pre>
     else if (k === "End") go(total - 1);
     else if (/^[0-9]$/.test(k)) { typed += k; }
     else if (k === "Enter" && typed) { go(parseInt(typed, 10) - 1); typed = ""; }
+    else if (k === "n" || k === "N") notesPanel.classList.toggle("open");
     else if (k === "f" || k === "F") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
     else if (k === "?") document.getElementById("help").classList.toggle("open");
     else if (k === "Escape") { document.getElementById("help").classList.remove("open"); notesPanel.classList.remove("open"); typed = ""; }
+    else if ((k === "p" || k === "P") && !isPresenter) {
+      peer = window.open(location.pathname + "?presenter#" + (cur + 1), "deck-presenter", "width=1200,height=760");
+    }
   });
   document.getElementById("help").addEventListener("click", e => e.currentTarget.classList.remove("open"));
 
