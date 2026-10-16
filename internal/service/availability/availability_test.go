@@ -101,6 +101,7 @@ func TestOccupancy_PerNight(t *testing.T) {
 	book(t, repo, 1, "2026-11-09", "2026-11-14", model.StatusConfirmed)
 	book(t, repo, 2, "2026-11-10", "2026-11-14", model.StatusConfirmed)
 	book(t, repo, 3, "2026-11-10", "2026-11-12", model.StatusCancelled)
+	book(t, repo, 3, "2026-11-08", "2026-11-10", model.StatusConfirmed) // checks out on 11-10
 
 	occ, err := svc.Occupancy(context.Background(), "standard", "2026-11-10", "2026-11-12")
 	if err != nil {

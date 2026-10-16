@@ -128,3 +128,23 @@ func TestReserve_SurchargeWhenTwoThirdsBooked(t *testing.T) {
 		t.Errorf("reserve: total %s, want 1861.80", b.Total)
 	}
 }
+
+func TestQuote_CheckOutNightIsNotBusy(t *testing.T) {
+	svc, _ := setup(t)
+	ctx := context.Background()
+	for _, r := range []Request{
+		{RoomTypeID: "standard", GuestName: "A", CheckIn: "2026-10-19", CheckOut: "2026-10-20"},
+		{RoomTypeID: "standard", GuestName: "B", CheckIn: "2026-10-20", CheckOut: "2026-10-21"},
+	} {
+		if _, err := svc.Reserve(ctx, r); err != nil {
+			t.Fatal(err)
+		}
+	}
+	q, err := svc.Quote(ctx, "standard", "2026-10-20", "2026-10-21")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if q.Total != 155150 {
+		t.Errorf("total %s, want 1551.50 (1 of 3 rooms booked)", q.Total)
+	}
+}

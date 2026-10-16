@@ -95,14 +95,13 @@ func (s *Service) Occupancy(ctx context.Context, typeID string, checkIn, checkOu
 		return model.Occupancy{}, err
 	}
 	occ := model.Occupancy{Rooms: len(rooms), Booked: map[model.Date]int{}}
-	lastNight := checkOut.AddDays(-1)
 	for _, rm := range rooms {
 		bks, err := s.bookings.ListActiveByRoom(ctx, rm.ID)
 		if err != nil {
 			return model.Occupancy{}, err
 		}
 		for _, b := range bks {
-			for d := max(b.CheckIn, checkIn); d <= min(b.CheckOut, lastNight); d = d.AddDays(1) {
+			for d := max(b.CheckIn, checkIn); d < min(b.CheckOut, checkOut); d = d.AddDays(1) {
 				occ.Booked[d]++
 			}
 		}
