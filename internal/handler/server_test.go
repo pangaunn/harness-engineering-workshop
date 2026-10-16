@@ -24,7 +24,9 @@ func (c *clock) Now() time.Time { return c.t }
 
 type testServer struct {
 	*httptest.Server
-	clock *clock
+	clock    *clock
+	payments *payment.Service
+	reports  *report.Service
 }
 
 // newTestServer wires the whole app against a fresh in-memory database.
@@ -46,7 +48,7 @@ func newTestServer(t *testing.T) *testServer {
 		srv.Close()
 		db.Close()
 	})
-	return &testServer{Server: srv, clock: clk}
+	return &testServer{Server: srv, clock: clk, payments: payments, reports: reports}
 }
 
 // do sends a request and decodes the JSON response into out (if non-nil).

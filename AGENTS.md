@@ -16,7 +16,8 @@ internal/jobs/           background jobs (nightly revenue report)
 
 ## Commands
 
-- `make check` runs gofmt, `go vet` and every test. CI runs the same command.
+- `make check` runs gofmt, `go vet` and every test, including the integration tests
+  (`-tags integration`) that plain `go test ./...` skips. CI runs the same command.
 - `go run ./cmd/server` starts the API on `:8080`.
 
 ## Verification
