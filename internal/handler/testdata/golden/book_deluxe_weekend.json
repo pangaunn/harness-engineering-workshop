@@ -1,0 +1,10 @@
+{
+  "id": 3,
+  "room_id": 4,
+  "guest_name": "Somchai",
+  "check_in": "2026-10-15",
+  "check_out": "2026-10-18",
+  "total": 7755.10,
+  "status": "confirmed",
+  "created_at": "2026-10-14T09:30:00+07:00"
+}

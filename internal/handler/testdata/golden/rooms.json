@@ -1,0 +1,26 @@
+{
+  "check_in_from": "14:00",
+  "room_types": [
+    {
+      "id": "standard",
+      "name": "Standard Double",
+      "capacity": 2,
+      "weekday_rate": 1450.00,
+      "weekend_rate": 1850.00
+    },
+    {
+      "id": "deluxe",
+      "name": "Deluxe River View",
+      "capacity": 2,
+      "weekday_rate": 2149.25,
+      "weekend_rate": 2549.25
+    },
+    {
+      "id": "suite",
+      "name": "Riverside Suite",
+      "capacity": 4,
+      "weekday_rate": 4350.00,
+      "weekend_rate": 5250.00
+    }
+  ]
+}

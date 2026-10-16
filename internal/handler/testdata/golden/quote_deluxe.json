@@ -1,0 +1,29 @@
+{
+  "room_type_id": "deluxe",
+  "check_in": "2026-10-15",
+  "check_out": "2026-10-18",
+  "nights": [
+    {
+      "date": "2026-10-15",
+      "weekend": false,
+      "rate": 2149.25,
+      "vat": 150.45
+    },
+    {
+      "date": "2026-10-16",
+      "weekend": true,
+      "rate": 2549.25,
+      "vat": 178.45
+    },
+    {
+      "date": "2026-10-17",
+      "weekend": true,
+      "rate": 2549.25,
+      "vat": 178.45
+    }
+  ],
+  "subtotal": 7247.75,
+  "vat": 507.35,
+  "total": 7755.10,
+  "rooms_left": 2
+}
