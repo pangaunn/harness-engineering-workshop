@@ -95,3 +95,26 @@ func TestFreeRooms_InvalidRange(t *testing.T) {
 		t.Errorf("got %v, want ErrInvalidRange", err)
 	}
 }
+
+func TestOccupancy_PerNight(t *testing.T) {
+	svc, repo := setup(t)
+	book(t, repo, 1, "2026-11-09", "2026-11-14", model.StatusConfirmed)
+	book(t, repo, 2, "2026-11-10", "2026-11-14", model.StatusConfirmed)
+	book(t, repo, 3, "2026-11-10", "2026-11-12", model.StatusCancelled)
+
+	occ, err := svc.Occupancy(context.Background(), "standard", "2026-11-10", "2026-11-12")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if occ.Rooms != 3 {
+		t.Errorf("rooms: got %d, want 3", occ.Rooms)
+	}
+	for night, want := range map[model.Date]int{"2026-11-10": 2, "2026-11-11": 2} {
+		if got := occ.Booked[night]; got != want {
+			t.Errorf("%s: got %d booked, want %d", night, got, want)
+		}
+	}
+	if len(occ.Booked) != 2 {
+		t.Errorf("booked nights outside the stay: %v", occ.Booked)
+	}
+}

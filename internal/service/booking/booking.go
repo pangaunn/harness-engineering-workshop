@@ -52,7 +52,11 @@ func (s *Service) Quote(ctx context.Context, roomTypeID string, checkIn, checkOu
 	if err != nil {
 		return model.Quote{}, err
 	}
-	q := pricing.Quote(rt, checkIn, checkOut)
+	occ, err := s.availability.Occupancy(ctx, rt.ID, checkIn, checkOut)
+	if err != nil {
+		return model.Quote{}, err
+	}
+	q := pricing.Quote(rt, checkIn, checkOut, occ)
 	q.RoomsLeft, err = s.availability.CountFree(ctx, rt.ID, checkIn, checkOut)
 	return q, err
 }
@@ -75,7 +79,11 @@ func (s *Service) Reserve(ctx context.Context, req Request) (model.Booking, erro
 	if len(free) == 0 {
 		return model.Booking{}, ErrNoAvailability
 	}
-	q := pricing.Quote(rt, req.CheckIn, req.CheckOut)
+	occ, err := s.availability.Occupancy(ctx, rt.ID, req.CheckIn, req.CheckOut)
+	if err != nil {
+		return model.Booking{}, err
+	}
+	q := pricing.Quote(rt, req.CheckIn, req.CheckOut, occ)
 	b, err := s.bookings.Create(ctx, model.Booking{
 		RoomID:    free[0].ID,
 		GuestName: req.GuestName,

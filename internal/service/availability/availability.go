@@ -84,8 +84,34 @@ func (s *Service) CountFree(ctx context.Context, typeID string, ci, co model.Dat
 	return count, nil
 }
 
+// Occupancy counts, for each night in [checkIn, checkOut), how many rooms of
+// a type have a confirmed booking.
+func (s *Service) Occupancy(ctx context.Context, typeID string, checkIn, checkOut model.Date) (model.Occupancy, error) {
+	if checkOut <= checkIn {
+		return model.Occupancy{}, ErrInvalidRange
+	}
+	rooms, err := s.rooms.ListByType(ctx, typeID)
+	if err != nil {
+		return model.Occupancy{}, err
+	}
+	occ := model.Occupancy{Rooms: len(rooms), Booked: map[model.Date]int{}}
+	lastNight := checkOut.AddDays(-1)
+	for _, rm := range rooms {
+		bks, err := s.bookings.ListActiveByRoom(ctx, rm.ID)
+		if err != nil {
+			return model.Occupancy{}, err
+		}
+		for _, b := range bks {
+			for d := max(b.CheckIn, checkIn); d <= min(b.CheckOut, lastNight); d = d.AddDays(1) {
+				occ.Booked[d]++
+			}
+		}
+	}
+	return occ, nil
+}
+
 func overlaps(existing model.Booking, checkIn, checkOut model.Date) bool {
-	return existing.CheckIn < checkOut && existing.CheckOut >= checkIn
+	return existing.CheckIn < checkOut && existing.CheckOut > checkIn
 }
 
 func nightsOverlapping(existing model.Booking, checkIn, checkOut model.Date) int {

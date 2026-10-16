@@ -97,3 +97,34 @@ func TestCancel_Twice(t *testing.T) {
 		t.Errorf("got %v, want ErrAlreadyCancelled", err)
 	}
 }
+
+func TestReserve_SurchargeWhenTwoThirdsBooked(t *testing.T) {
+	svc, _ := setup(t)
+	ctx := context.Background()
+	// Tuesday night, standard: 1450.00 + 101.50 VAT.
+	req := Request{RoomTypeID: "standard", GuestName: "Somchai", CheckIn: "2026-10-20", CheckOut: "2026-10-21"}
+	for range 2 {
+		b, err := svc.Reserve(ctx, req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if b.Total != 155150 {
+			t.Errorf("before two thirds: total %s, want 1551.50", b.Total)
+		}
+	}
+	// Two of three rooms are booked: 1740.00 + 121.80 VAT.
+	q, err := svc.Quote(ctx, "standard", "2026-10-20", "2026-10-21")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if q.Total != 186180 {
+		t.Errorf("quote: total %s, want 1861.80", q.Total)
+	}
+	b, err := svc.Reserve(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b.Total != 186180 {
+		t.Errorf("reserve: total %s, want 1861.80", b.Total)
+	}
+}

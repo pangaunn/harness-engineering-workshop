@@ -63,6 +63,12 @@ type NightPrice struct {
 	VAT     Money `json:"vat"`
 }
 
+// Occupancy is how many rooms of a type are booked on each night of a stay.
+type Occupancy struct {
+	Rooms  int
+	Booked map[Date]int
+}
+
 type Quote struct {
 	RoomTypeID string       `json:"room_type_id"`
 	CheckIn    Date         `json:"check_in"`
