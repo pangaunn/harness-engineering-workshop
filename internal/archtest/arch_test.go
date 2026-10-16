@@ -38,7 +38,7 @@ func TestArchitecture(t *testing.T) {
 			failures = append(failures, fmt.Sprintf("internal/%s is not registered\n"+
 				"  Every package must be listed in internal/archtest/rules.go.\n"+
 				"  Adding a new entry is allowed. Loosening the `allowed` map is not.\n"+
-				"  See docs/architecture.md#rules", pkg))
+				"  See \"Adding a package\" in AGENTS.md", pkg))
 			continue
 		}
 		for _, imp := range imports[pkg] {
