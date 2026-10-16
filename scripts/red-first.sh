@@ -45,4 +45,4 @@ if out=$(cd "$old" && go test -tags integration -count=1 $pkgs 2>&1); then
 	exit 1
 fi
 echo "red-first: ok, your changed tests fail on the code at $base:"
-echo "$out" | grep -E '(--- FAIL|^FAIL|_test\.go:[0-9]+:|build failed)' | head -20 | sed 's/^/  /'
+echo "$out" | grep -E '(--- FAIL|_test\.go:[0-9]+:|build failed)' | head -20 | sed 's/^/  /'
