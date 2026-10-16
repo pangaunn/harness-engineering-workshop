@@ -37,17 +37,17 @@ func TestAPI_Golden(t *testing.T) {
 		}
 	}
 
-	s.clock.t = time.Date(2026, 10, 14, 9, 30, 0, 0, model.HotelTime)
+	s.clock.t = time.Date(2026, 10, 13, 9, 30, 0, 0, model.HotelTime)
 	checkGolden(t, s, "rooms", "GET", "/rooms", nil, http.StatusOK)
 	checkGolden(t, s, "quote_deluxe", "POST", "/quotes", book("deluxe", "2026-10-15", "2026-10-18"), http.StatusOK)
 	checkGolden(t, s, "book_standard", "POST", "/bookings", book("standard", "2026-10-19", "2026-10-21"), http.StatusCreated) // id 1
 	checkGolden(t, s, "book_deluxe_1_night", "POST", "/bookings", book("deluxe", "2026-10-19", "2026-10-20"), http.StatusCreated)
 	checkGolden(t, s, "book_deluxe_weekend", "POST", "/bookings", book("deluxe", "2026-10-15", "2026-10-18"), http.StatusCreated) // id 3
 	checkGolden(t, s, "cancel_deluxe_weekend", "POST", "/bookings/3/cancel", nil, http.StatusOK)
-	report("2026-10-14")
-	checkGolden(t, s, "report_2026-10-14", "GET", "/reports/revenue?date=2026-10-14", nil, http.StatusOK)
+	report("2026-10-13")
+	checkGolden(t, s, "report_2026-10-13", "GET", "/reports/revenue?date=2026-10-13", nil, http.StatusOK)
 
-	// Next day, refunds exceed charges.
+	// Two days later, refunds exceed charges.
 	s.clock.t = time.Date(2026, 10, 15, 11, 0, 0, 0, model.HotelTime)
 	checkGolden(t, s, "book_standard_weekend", "POST", "/bookings", book("standard", "2026-10-23", "2026-10-24"), http.StatusCreated)
 	checkGolden(t, s, "cancel_standard", "POST", "/bookings/1/cancel", nil, http.StatusOK)
