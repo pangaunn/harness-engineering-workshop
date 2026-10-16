@@ -205,6 +205,7 @@ body.presenter #presenter {
 .p-notes { flex: 1; overflow: auto; background: #1E1E1C; border-radius: 10px; padding: 20px 24px; font: 400 19px/1.55 var(--sans); color: #E6E4DB; }
 .p-notes .none { color: #6E6D67; }
 
+
 .xdense .body { font-size: 18px; }
 .xdense h2 { font-size: 38px; margin-bottom: 18px; }
 .xdense pre { font-size: 14px; line-height: 1.45; padding: 12px 18px; }
@@ -224,6 +225,10 @@ body.presenter #presenter {
 .diagram .bs { font: 400 12.5px var(--sans); fill: var(--cloud); text-anchor: middle; }
 .diagram .ar { stroke: var(--cloud); stroke-width: 1.6; }
 .diagram .ah { fill: var(--cloud); }
+.statement { justify-content: center; align-items: center; text-align: center; }
+.statement h1 { font-size: 180px; }
+.picture { align-items: center; text-align: center; }
+.picture img { flex: 1; min-height: 0; max-width: 100%; object-fit: contain; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -242,7 +247,7 @@ body.presenter #presenter {
 <section class="slide xdense" data-part="Opening">
   <h2>Agenda</h2>
   <div class="body"><ul><li>What and why: harness engineering</li><li><p>One app, maintained over the rounds:</p>
-<ul><li><strong>Round 1</strong> · Migration · <em>Verification</em>: did the agent run everything? · split: half with, half without</li><li><strong>Round 2</strong> · Feature · <em>Architecture rules</em>: did the code land in the right place? · build your own harness</li><li><strong>Round 3</strong> · Bug fix · <em>Workflow</em>: red → green → refactor, did a test fail before the fix? · add to your harness</li></ul></li><li><strong>Wrap-up</strong> · compare, audit your own repo</li><li>Backup: <strong>Round 4</strong> · Bigger feature · <em>Growing the architecture</em>: who may change the rules? · if time is left</li></ul></div>
+<ul><li><strong>Round 1</strong> · Migration · <em>Verification</em>: did the agent run everything? · split: half with, half without</li><li><strong>Round 2</strong> · Feature · <em>Architecture rules</em>: did the code land in the right place? · build your own harness</li><li><strong>Round 3</strong> · Bug fix · <em>Workflow</em>: red → green → refactor, did a test fail before the fix? · add to your harness</li><li><strong>Round 4</strong> · Bigger feature · <em>Growing the architecture</em>: what does your harness need before the next prompt? · think, then let your agent update it</li></ul></li><li><strong>Wrap-up</strong> · audit your own repo</li></ul></div>
 </section>
 
 <section class="slide" data-part="Opening">
@@ -280,7 +285,7 @@ R2  r2-without ─► r2-mine ─► compare with r2-with      your harness star
 R3  r3-without ─► r3-mine ─► compare with r3-with      + your r2-mine harness
         │ our R3 result
 R4  r4-without ─► r4-mine ─► compare with r4-with      + your r3-mine harness</pre>
-<ul><li><strong>The code resets each round; your harness carries over.</strong> Every round starts from our result of the previous round, so everyone has the same code.</li><li>Rounds 2–4, four steps: <strong>1. run</strong> on <code>without</code> · <strong>2. build</strong> your harness · <strong>3. rerun</strong> the same prompt · <strong>4. compare</strong> with ours.</li><li><strong>Commit your harness at the end of every round</strong> (<code>r2-mine</code>, <code>r3-mine</code>, …). It's what you bring to the next one.</li><li>Keep <strong><code>WORKSHOP.md</code> open in a browser</strong> (GitHub, <code>main</code> branch). The round branches don't contain it.</li></ul></div>
+<ul><li><strong>The code resets each round; your harness carries over.</strong> Every round starts from our result of the previous round, so everyone has the same code.</li><li>Rounds 2–3, four steps: <strong>1. run</strong> on <code>without</code> · <strong>2. build</strong> your harness · <strong>3. rerun</strong> the same prompt · <strong>4. compare</strong> with ours. Round 4 works like real life: <strong>think</strong> about what the harness needs for the next prompt, let the agent update it, then send the prompt.</li><li><strong>Commit your harness at the end of every round</strong> (<code>r2-mine</code>, <code>r3-mine</code>, …). It's what you bring to the next one.</li><li>Keep <strong><code>WORKSHOP.md</code> open in a browser</strong> (GitHub, <code>main</code> branch). The round branches don't contain it.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Opening">
@@ -458,37 +463,41 @@ red-first: ok, your changed tests fail on the code at HEAD:
       booking_test.go:148: total 1861.80, want 1551.50 (1 of 3 rooms booked)</pre></li><li><strong>"A test changed" is easy to fake. "A test failed first" isn't.</strong></li><li>Checkable → in the command. Judgment (what "refactor" may touch) → in Markdown.</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
-  <h2>Round 4 · Why must the rules grow?</h2>
-  <div class="body"><ul><li>Your R2 rules list today's packages. The next feature adds one, and <code>make check</code> goes red: <code>internal/service/… is not registered</code>.</li><li><p>Two ways to make it green:</p>
-<ul><li><strong>Register it</strong> in the right layer: the rules grow with the code.</li><li><strong>Loosen</strong> <code>allowed</code>, or invent a layer that may import anything: the rules shrink.</li></ul></li><li>Both are green. In a big diff, nobody notices which one happened.</li><li>The docs fall behind the same way: a new package nobody wrote down.</li></ul>
-<p>Example (any team): a test fails before a release, and someone deletes it. Is that a fix?</p></div>
+<section class="slide" data-part="Round 4 · Growing the architecture · Think">
+  <h2>Round 4 · Before you send the next prompt</h2>
+  <div class="body"><p>You maintain this app, and this is the next task. <strong>Is your harness ready for it?</strong></p>
+<div class="prompt" data-label="Next prompt · don't send it yet">Add POST /group-bookings: book 2–5 rooms of one room type for the same dates under one guest name. All rooms are booked or none are. Group stays follow the same stay rules as single bookings. Every room in a group pays the same price: the busy-night surcharge uses occupancy before the group, not the group's own rooms. Group bookings live in their own package, service/groupbooking, so booking doesn't keep growing.  Request: the /bookings fields plus "rooms". Response: 201 with {"bookings": [...], "total": ...}.</div></div><p class="callout sm">What would you add so the agent keeps delivering quality software, now and after this task?</p>
 </section>
 
-<section class="slide dense xdense" data-part="Round 4 · Growing the architecture" data-backup>
-  <h2>Round 4 · Step 1</h2>
-  <div class="body"><ul><li>Steps: run · build your harness with your agent · rerun · compare.</li><li><code>r4-without</code> = our R3 result + our R1–R3 harness.</li></ul>
-<pre>git checkout r4-without</pre>
-<div class="prompt">Add POST /group-bookings: book 2–5 rooms of one room type for the same dates under one guest name. All rooms are booked or none are. Group stays follow the same stay rules as single bookings. Every room in a group pays the same price: the busy-night surcharge uses occupancy before the group, not the group's own rooms. Group bookings live in their own package, service/groupbooking, so booking doesn't keep growing.  Request: the /bookings fields plus "rooms". Response: 201 with {"bookings": [...], "total": ...}.</div>
-<ul><li>Write down "before": <code>git status --short</code> and <code>git diff internal/archtest/rules.go</code>. Which packages are new, and which layer did each get? Did <code>allowed</code> change? Did the docs and tests grow too?</li></ul></div>
+<section class="slide dense xdense" data-part="Round 4 · Growing the architecture · Think">
+  <h2>Round 4 · What your harness checks today</h2>
+  <div class="body"><table><tr><th>Your harness (<code>r4-without</code>)</th><th>Since</th></tr><tr><td><code>make check</code>: gofmt, vet, every test incl. integration; paste the output</td><td>R1</td></tr><tr><td>Import rules between layers; every package must be registered</td><td>R2</td></tr><tr><td>Red → green → refactor; a changed test must fail on the old code</td><td>R3</td></tr></table>
+<p>This prompt adds new code, a new endpoint and new rules about money. For each, ask:</p>
+<ul><li><strong>Where does it go?</strong> Do the rules know about it? Who decides which layer?</li><li><strong>How is it tested?</strong> Which tests must a new package or endpoint come with?</li><li><strong>What must be written down,</strong> so the next agent (or person) knows it?</li></ul></div><p class="callout sm">What may the agent change on its own, and what needs a human?</p>
 </section>
 
-<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
-  <h2>Step 2 · Build your harness with your agent</h2>
-  <div class="body"><pre>git reset --hard &amp;&amp; git clean -fd &amp;&amp; git switch -c r4-mine
+<section class="slide" data-part="Round 4 · Growing the architecture · Think">
+  <h2>Step 1 · Think, then let your agent update the harness</h2>
+  <div class="body"><pre>git checkout r4-without &amp;&amp; git switch -c r4-mine
 git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile scripts internal/archtest</pre>
 <p>(No working round 3 harness? Skip the second line: <code>r4-without</code> already has ours.)</p>
-<ol><li><strong>Decide as a pair first:</strong> what may grow? What needs a human? What must a new package come with?</li><li><strong>New session.</strong> Work it out with your agent, the way you would at work: an <code>## Adding a package</code> recipe, and a <code>make check</code> that fails when <code>allowed</code> changes.</li><li><strong>Prove it yourself:</strong> add <code>"aggregate"</code> to <code>allowed["aggregate"]</code> → red. Undo. Commit.</li></ol></div>
+<ol><li><strong>As a pair, list what's missing</strong> (4 min). Write it down before you open the agent.</li><li><strong>New session.</strong> Give the agent <strong>your list, not the prompt.</strong> Let it update the harness: <code>AGENTS.md</code>, checks in <code>make check</code>. Review what it did.</li><li><strong>Prove every new check:</strong> make the mistake on purpose → <code>make check</code> red. Undo.</li><li><code>git add -A &amp;&amp; git commit -m "our harness"</code></li></ol></div>
 </section>
 
-<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
-  <h2>Step 3 · Rerun, Step 4 · Compare</h2>
-  <div class="body"><ul><li>Fresh session, same tool, same prompt. Write down "after".</li><li><code>git diff -- internal/archtest AGENTS.md docs</code>: what did the agent change in your rules and docs?</li></ul>
-<pre>git diff r4-mine origin/r4-with -- AGENTS.md Makefile scripts internal/archtest</pre>
-<ul><li>Which of your rules can the agent change as easily as the code?</li></ul></div>
+<section class="slide" data-part="Round 4 · Growing the architecture · Think">
+  <h2>Step 2 · Send the prompt</h2>
+  <div class="body"><ul><li><strong>Fresh session</strong>, same tool. Paste the prompt from slide 31. Rules for every run apply.</li><li>When it says done:</li></ul>
+<pre>git status --short &amp;&amp; git diff internal/archtest/rules.go &amp;&amp; make check</pre>
+<ul><li>Which packages are new, and which layer did each get? Did <code>allowed</code> change? Did your harness stop anything, or did the agent change it?</li></ul></div>
 </section>
 
-<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
+<section class="slide" data-part="Round 4 · Growing the architecture · Think">
+  <h2>Step 3 · Compare with ours</h2>
+  <div class="body"><pre>git diff HEAD origin/r4-with -- AGENTS.md Makefile scripts internal/archtest</pre>
+<ul><li>What does ours check that yours doesn't? And the other way round?</li><li>Which of your rules can the agent change as easily as the code?</li></ul></div>
+</section>
+
+<section class="slide" data-part="Round 4 · Growing the architecture · Think">
   <h2>Reveal: Round 4</h2>
   <div class="body"><ul><li>Our answer: the shared stay rules become a new domain, <strong><code>stay</code></strong>; <code>groupbooking</code> is a new aggregate. <code>layers</code> grows by two; <strong><code>allowed</code> is unchanged</strong>.</li><li><p>Our <code>make check</code> lets the rules grow and stops them shrinking:</p>
 <pre>harness-guard: FAIL: `allowed` in internal/archtest/rules.go changed.
@@ -496,16 +505,6 @@ git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile scripts internal/archtest</
   Fix the design instead (see "Adding a package" in AGENTS.md), or stop and ask.
 
 FAIL: AGENTS.md does not name `groupbooking` (aggregate), `stay` (domain)</pre></li></ul></div><p class="callout sm">The rules may grow. Only a human may loosen them.</p>
-</section>
-
-<section class="slide" data-part="Round 4 · Growing the architecture" data-backup>
-  <h2>Homework (shown only if Round 4 was skipped)</h2>
-  <div class="body"><ul><li>Round 4 at home: same 4 steps, in <code>WORKSHOP.md</code>.</li></ul></div>
-</section>
-
-<section class="slide" data-part="Wrap-up">
-  <h2>Compare harnesses</h2>
-  <div class="body"><ul><li>One pair shows their <code>r3-mine</code> (or <code>r4-mine</code>) <code>AGENTS.md</code> and <code>rules.go</code>.</li></ul></div>
 </section>
 
 <section class="slide" data-part="Wrap-up">
@@ -516,6 +515,10 @@ FAIL: AGENTS.md does not name `groupbooking` (aggregate), `stay` (domain)</pre><
 <section class="slide" data-part="Wrap-up">
   <h2>Takeaways</h2>
   <div class="body"><ul><li>Markdown explains. Code enforces. The error message re-teaches.</li><li>Put everything checkable into <strong>one command</strong>, and make CI run the same one.</li><li>Harnesses rot too: entropy control, scheduled cleanup agents.</li><li>Take your harness branch home.</li></ul></div>
+</section>
+
+<section class="slide statement" data-part="Wrap-up">
+  <h1>Q&amp;A</h1>
 </section>
 
 <section class="slide" data-part="Wrap-up">

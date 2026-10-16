@@ -6,60 +6,74 @@ docs that explain the rules, checks that enforce them, and gates that make sure 
 Today you work in pairs, one laptop and one coding agent per pair. Keep the **same agent tool for
 the whole round** (you may switch between rounds).
 
-| Round | Topic | Format |
-|---|---|---|
-| 1 | Verification | **Split**: half the room runs with a harness, half without. Compare. |
-| 2 | Architecture rules | **Build**: run without a harness, build one, run again, compare with ours. |
-| 3 | Scope and "done" | **Build** (short): add to your round 2 harness. |
-| 4 | Extending the architecture | **Build**, only if time is left (otherwise homework): add to your round 3 harness. |
+One app, maintained over four rounds. Every round starts from our result of the previous round, so
+everyone has the same code. **The code resets each round; your harness carries over.**
+
+| Round | Task | Topic | Format |
+|---|---|---|---|
+| 1 | Migration | Verification: did the agent run everything? | **Split**: half the room with a harness, half without. |
+| 2 | Feature | Architecture rules: did the code land in the right place? | **Build**: run, build your harness, rerun, compare with ours. |
+| 3 | Bug fix | Workflow: red → green → refactor | **Build**: add to your round 2 harness. |
+| 4 | Bigger feature | Growing the architecture: what does your harness need before the next prompt? | **Think**: list what's missing, let your agent update the harness, then send the prompt. |
 
 You build **one harness** over rounds 2–4 and keep it on your own branches (`r2-mine`, `r3-mine`,
-`r4-mine`). At the end you take it home.
+`r4-mine`). **Commit it at the end of every round**: it's what you bring to the next one. At the
+end you take it home.
 
 ## Rules for every run
 
 1. Start from a clean tree: `git status` shows nothing to commit.
 2. Start a **fresh** agent session in the repo root. Never reuse a session from an earlier run.
-3. Paste the round prompt **exactly as written**.
-4. Add nothing else. No hints, no "run the tests", no "read the docs". The harness has to do that work.
-5. If the agent asks a question, reply only: `Use your best judgment.`
-6. When the agent says it's done, stop. Don't ask it to fix anything. Report your result on the
-   scorecard form (the QR code on the slides).
+3. Paste the round prompt **exactly as written**. Add nothing else: no hints, no "run the tests",
+   no "read the docs". The harness has to do that work.
+4. If the agent asks a question, reply only: `Use your best judgment.`
+5. When the agent says it's done, stop. Don't ask it to fix anything.
+6. Use the same agent tool for the whole round.
 
-Throw away the agent's changes with:
+Git cheat sheet:
 ```
-git reset --hard && git clean -fd
+git reset --hard && git clean -fd      # throw away the agent's changes
+git switch -c r2-mine                  # start your own harness branch
+git checkout origin/r2-kit -- .        # pull in the round 2 kit
+git add -A && git commit -m "our harness"
+
+# rounds 3 and 4: bring your harness from the previous round
+git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest           # round 3
+git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile scripts internal/archtest   # round 4
 ```
 
 ## Round 1 · Verification (split)
 
 The facilitator tells your pair `with` or `without`.
 
-1. Before you start: **predict.** Will the agent say it's done while tests are failing?
+1. Before you start: **predict.** Will the agent run **every** test in the repo before it says it's
+   done?
 2. `git checkout r1-with` or `git checkout r1-without`, then follow the rules above with this prompt:
 
 ```
 Migrate all money values from float64 to the Money type (int64 satang) defined in internal/model.
 ```
 
-3. When the agent stops, check its work yourself and report on the scorecard:
+3. When the agent stops, check its work yourself:
    - Run `go test -tags integration ./...`. Do all tests pass?
    - Read the agent's log. Before it said done, did it run `make check` or
      `go test -tags integration ./...`? Plain `go test ./...` doesn't count.
-4. Reset.
+4. Reset: `git reset --hard && git clean -fd`.
 
 ## Round 2 · Architecture rules (build)
 
+**Step 1 · Run.** `git checkout r2-without`, then run this prompt:
+
 ```
-Fix the bug: cancellation refunds ignore the cancellation policy. The policy is: cancelling 48 hours
-or more before check-in gives a 100% refund, 24 to 48 hours gives 50%, and less than 24 hours gives
-no refund.
+When at least 2/3 of a room type's rooms are already booked for a night, that night's rate is 20%
+higher. pricing.Quote should get occupancy from the availability service itself, so callers don't
+have to pass it in.
 ```
 
-**Step 1 · Run without a harness (~8 min).** `git checkout r2-without`, then run the prompt.
-Report your "before" result. Look at the diff: which packages did the agent make import each other?
+Write down your "before" result. Then `git diff`: where did the new logic go, and what does each
+changed package import now?
 
-**Step 2 · Build your harness (~10 min).**
+**Step 2 · Build your harness.**
 
 ```
 git reset --hard && git clean -fd
@@ -69,7 +83,8 @@ git checkout origin/r2-kit -- .
 
 The kit gives you:
 - `internal/archtest/arch_test.go`: a ready-made test that reads every package's real imports
-  (with Go's `go/parser`) and checks them against your rules. You don't need to edit it.
+  (with Go's `go/parser`) and checks them against your rules. You don't need to edit it (unless
+  you're done early: the error messages live there).
 - `internal/archtest/rules.go`: **empty rules** for you to fill in. The comments show the format
   with an example from a different app.
 - `Makefile`: `make check` runs gofmt, `go vet` and all tests.
@@ -82,113 +97,124 @@ Do this:
    app needs. Look at what each package does.
 3. Fill in `allowed`: for each layer, list the layers it may import. Run
    `go test ./internal/archtest/` until it passes on the code as it is now.
-   (`make check` will still fail on this branch: that's the round's bug, which the agent fixes.)
 4. Test your rule: in `internal/service/payment/payment.go`, add an import of another service
    package, for example
    `_ "github.com/pangaunn/harness-engineering-workshop/internal/service/pricing"`.
    Does `go test ./internal/archtest/` fail? If not, your rules are too loose. Remove the import.
-5. Write `AGENTS.md`: one sentence per rule, and when the agent is done ("You are not done until
-   `make check` passes").
+5. Write `AGENTS.md`: one sentence per rule, plus "You are not done until `make check` passes."
 6. Save your harness: `git add -A && git commit -m "our harness"`.
 
-**The harness may describe rules and checks, never the answer.** No "refund 50% when…", no
-"put the policy in this function". Write rules that would still be true for the next bug.
+**The harness may describe rules and checks, never the answer.** Write rules that would still be
+true for the next feature.
 
-**Step 3 · Run again (~8 min).** Fresh session, same agent tool, same prompt. Report your "after"
-result. Then `git reset --hard && git clean -fd` (your harness commit stays).
+**Done early?**
+- Make your error message say where the logic should go instead.
+- Try to put the logic in the wrong place in a way your rules still accept. What would you need to
+  catch it?
 
-**Step 4 · Compare with ours (~5 min).**
+**Step 3 · Rerun.** Fresh session, same agent tool, same prompt. Write down your "after" result.
+Then `git reset --hard && git clean -fd` (your harness commit stays).
+
+**Step 4 · Compare with ours.**
 ```
 git diff r2-mine origin/r2-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs
 ```
 Where do your rules differ from ours? Would ours have stopped something yours let through?
 
-**Stretch goals** (if you finish step 2 early):
-- **Make the error message teach.** The failure says what broke. Change it in `arch_test.go` so it
-  also says where the logic should go instead. Does that help the agent recover?
-- **Read the runner.** See how `arch_test.go` uses `go/parser` to read imports.
-- **Beat your own rules.** Find a way to put the logic in the wrong place that your
-  `go test ./internal/archtest/` still accepts. What would you need to catch it?
+## Round 3 · Bug fix workflow (build)
 
-## Round 3 · Scope and "done" (build, short)
+`r3-without` is our round 2 result (the busy-night surcharge) plus our round 2 harness.
+
+**Step 1 · Run.** `git checkout r3-without`, then run this prompt:
 
 ```
-Fix the bug: a guest cannot book a room starting on the day the previous guest checks out.
+Fix the bug: guests are charged the 20% busy-night surcharge on nights the hotel isn't busy, e.g. a
+standard room on 20 Oct when only one of three standard rooms was occupied that night.
 ```
 
-**Step 1 · Run without a harness (~5 min).** `git checkout r3-without`, run the prompt, report your
-"before" result. Run `git diff --stat`: how many files did the agent touch?
+Write down your "before" result. Then `git diff --stat`: which files did the agent touch? Did it add
+a test, and did that test fail before the fix?
 
-**Step 2 · Add to your harness (~5 min).** Bring in your round 2 harness:
+**Step 2 · Add to your harness.**
 ```
 git reset --hard && git clean -fd
 git switch -c r3-mine
-git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest
+git checkout r2-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest   # your round 2 harness
 ```
-(No working round 2 harness? Use ours instead:
-`git checkout origin/r2-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs`.)
+(No working round 2 harness? Skip the last line: `r3-without` already has ours.)
 
-Run `make check`: it should pass on this branch. Then add a **Definition of done** section to
-`AGENTS.md`: what "done" means for a bug fix in this repo, and what the agent must *not* touch.
-Save it: `git add -A && git commit -m "our harness"`.
-Same rule as round 2: describe "done", never the answer.
+`make check` should pass here. Then:
+- Add a **`## Workflow`** section to `AGENTS.md`: red → green → refactor → done. What counts as
+  "red"? What may "refactor" touch? Where do other findings go?
+- Make `make check` **fail when Go code changed but no `_test.go` file did**, and print the changed
+  files.
+- Save it: `git add -A && git commit -m "our harness"`.
 
-**Step 3 · Run again (~5 min).** Fresh session, same tool, same prompt. Report your "after" result.
+**Done early?** Make your check fail when the changed tests also pass on the old code.
+
+**Step 3 · Rerun.** Fresh session, same tool, same prompt. Write down your "after" result.
 
 **Step 4 · Compare with ours.**
 ```
-git diff r3-mine origin/r3-with -- AGENTS.md CLAUDE.md Makefile
+git diff r3-mine origin/r3-with -- AGENTS.md CLAUDE.md Makefile scripts
 ```
-Which parts of your "done" are sentences an agent may ignore, and which are commands that fail?
+Which parts of your workflow are sentences an agent may ignore? Which are commands that fail?
 
-**Stretch goals:**
-- Make `make check` fail when no `_test.go` file changed.
-- Make `make check` print the list of changed files, so the agent sees its own footprint.
+## Round 4 · Growing the architecture (think, then send)
 
-## Round 4 · Extending the architecture (build, if time is left)
-
-The facilitator says whether we run this now. If not, do it at home with the same steps.
+At work, the next task is already waiting. Before you hand it to the agent: **is your harness ready
+for it?** This is the next prompt. **Don't send it yet.**
 
 ```
-Add group bookings: a guest can reserve 2 to 5 rooms for the same dates in one request via
-POST /group-bookings. Either all rooms are booked or none. Charge one combined payment. Cancelling
-a group booking refunds each room using the existing cancellation policy.
+Add POST /group-bookings: book 2–5 rooms of one room type for the same dates under one guest name. All rooms are booked or none are. Group stays follow the same stay rules as single bookings. Every room in a group pays the same price: the busy-night surcharge uses occupancy before the group, not the group's own rooms. Group bookings live in their own package, service/groupbooking, so booking doesn't keep growing.
+
+Request: the /bookings fields plus "rooms". Response: 201 with {"bookings": [...], "total": ...}.
 ```
 
-**Step 1 · Run without a harness (~8 min).** `git checkout r4-without`, run the prompt, report your
-"before" result. Which new packages did the agent create, and what do they import?
+What would you add to the harness so the agent keeps delivering quality software, now and after
+this task?
 
-**Step 2 · Add to your harness (~5 min).** Bring in your round 3 harness:
+What your harness (`r4-without`) checks today:
+
+| Check | Since |
+|---|---|
+| `make check`: gofmt, vet, every test incl. integration; paste the output | Round 1 |
+| Import rules between layers; every package must be registered | Round 2 |
+| Red → green → refactor; a changed test must fail on the old code | Round 3 |
+
+This prompt adds new code, a new endpoint and new rules about money. For each, ask:
+- **Where does it go?** Do the rules know about it? Who decides which layer?
+- **How is it tested?** Which tests must a new package or endpoint come with?
+- **What must be written down,** so the next agent (or person) knows it?
+- **What may the agent change on its own, and what needs a human?**
+
+**Step 1 · Think, then let your agent update the harness.**
 ```
-git reset --hard && git clean -fd
-git switch -c r4-mine
-git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile internal/archtest
+git checkout r4-without && git switch -c r4-mine
+git checkout r3-mine -- AGENTS.md CLAUDE.md Makefile scripts internal/archtest
 ```
-(No working round 3 harness? `git checkout origin/r3-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs`.)
+(No working round 3 harness? Skip the second line: `r4-without` already has ours.)
 
-Check your rules with `go test ./internal/archtest/`. (`make check` fails on this branch until the
-feature exists: the group-booking tests are the task.)
+1. **As a pair, list what's missing.** Write it down before you open the agent.
+2. **New session.** Give the agent **your list, not the prompt.** Let it update the harness:
+   `AGENTS.md`, checks in `make check`. Review what it did.
+3. **Prove every new check:** make the mistake on purpose and see `make check` go red. Undo.
+4. Save it: `git add -A && git commit -m "our harness"`.
 
-The agent will add new packages, and your rules say every package must be registered. So your
-harness has to answer two questions in `AGENTS.md`:
-1. **How do you add a new package?** Which layer does it go in, where do you register it?
-2. **What may the agent change in the harness?** Adding a package to `layers` is fine.
-   Loosening `allowed` to make the check pass is not.
-
-Save it: `git add -A && git commit -m "our harness"`.
-
-**Step 3 · Run again (~8 min).** Fresh session, same tool, same prompt. Report your "after" result.
-Then look at `git diff -- internal/archtest`: what did the agent change in your harness?
-
-**Step 4 · Compare with ours.**
+**Step 2 · Send the prompt.** Fresh session, same tool. Paste the prompt above. The rules for every
+run apply. When the agent says done:
 ```
-git diff r4-mine origin/r4-with -- AGENTS.md CLAUDE.md Makefile internal/archtest docs
+git status --short && git diff internal/archtest/rules.go && make check
 ```
-Should an agent be allowed to edit its own harness? Where would you draw the line, and how would
-you enforce it?
+Which packages are new, and which layer did each get? Did `allowed` change? Did your harness stop
+anything, or did the agent change it?
 
-**Stretch goal:** make the "not registered" error message point to your "how to add a package"
-instructions, so the agent finds the recipe at the moment it fails.
+**Step 3 · Compare with ours.**
+```
+git diff HEAD origin/r4-with -- AGENTS.md Makefile scripts internal/archtest
+```
+What does ours check that yours doesn't? And the other way round? Which of your rules can the agent
+change as easily as the code?
 
 ## Last minutes · Audit your own repo
 
