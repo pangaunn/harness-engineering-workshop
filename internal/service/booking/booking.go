@@ -1,6 +1,4 @@
-// Package booking is the aggregate for quoting, reserving and cancelling a
-// stay. It is the only place that combines the room, availability, pricing
-// and payment domains.
+// Package booking handles quoting, reserving and cancelling a stay.
 package booking
 
 import (

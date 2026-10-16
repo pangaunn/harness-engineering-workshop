@@ -8,7 +8,7 @@ Layered as handler → service → repository. Amounts are Thai baht and include
 ```
 cmd/server/              entry point and wiring
 internal/handler/        HTTP, JSON in/out
-internal/service/        booking (aggregate); room, availability, pricing, payment, report (domains)
+internal/service/        booking, room, availability, pricing, payment, report
 internal/repository/     SQLite access, one file per table
 internal/model/          plain structs shared by every layer
 internal/jobs/           background jobs (nightly revenue report)
