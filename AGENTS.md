@@ -20,6 +20,15 @@ internal/jobs/           background jobs (nightly revenue report)
   (`-tags integration`) that plain `go test ./...` skips. CI runs the same command.
 - `go run ./cmd/server` starts the API on `:8080`.
 
+## Architecture
+
+Details and reasoning: [docs/architecture.md](docs/architecture.md). `make check` enforces these rules.
+
+1. Handlers never import `repository`; they call services.
+2. Domain services (`room`, `availability`, `pricing`, `payment`, `report`) never import each other. Logic that needs two domains goes in an aggregate.
+3. Aggregates (`booking`) never import other aggregates.
+4. Every package must be registered in `internal/archtest/rules.go`.
+
 ## Verification
 
 You are not done until `make check` passes. Paste its final output in your final message.

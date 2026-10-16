@@ -36,7 +36,9 @@ func TestArchitecture(t *testing.T) {
 		layer, ok := layers[pkg]
 		if !ok {
 			failures = append(failures, fmt.Sprintf("internal/%s is not registered\n"+
-				"  Every package must be listed in `layers` in internal/archtest/rules.go.", pkg))
+				"  Every package must be listed in internal/archtest/rules.go.\n"+
+				"  Adding a new entry is allowed. Loosening the `allowed` map is not.\n"+
+				"  See docs/architecture.md#rules", pkg))
 			continue
 		}
 		for _, imp := range imports[pkg] {
@@ -53,12 +55,21 @@ func TestArchitecture(t *testing.T) {
 }
 
 func violation(pkg, layer, imp, impLayer string) string {
-	may := "nothing"
-	if len(allowed[layer]) > 0 {
-		may = strings.Join(allowed[layer], ", ")
+	head := fmt.Sprintf("internal/%s imports internal/%s\n", pkg, imp)
+	var why string
+	switch {
+	case layer == "domain" && impLayer == "domain":
+		why = "  Domain services must not import each other.\n" +
+			"  If logic needs two domains, move it into an aggregate (e.g. service/booking)."
+	case layer == "aggregate" && impLayer == "aggregate":
+		why = "  Aggregates must not import other aggregates.\n" +
+			"  Extract the shared logic into a domain package that both aggregates import."
+	case layer == "handler" && impLayer == "repository":
+		why = "  Handlers must call a service, never a repository."
+	default:
+		why = fmt.Sprintf("  The %s layer may only import: %s.", layer, strings.Join(allowed[layer], ", "))
 	}
-	return fmt.Sprintf("internal/%s imports internal/%s\n"+
-		"  Layer %q may not import layer %q. It may import: %s.", pkg, imp, layer, impLayer, may)
+	return head + why + "\n  See docs/architecture.md#rules"
 }
 
 // internalImports maps each package directory under root (relative, slash
