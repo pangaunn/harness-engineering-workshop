@@ -244,10 +244,10 @@ body.presenter #presenter {
   <div class="body"><ul><li>Inspired by <strong>Learn Harness Engineering</strong> by WalkingLab</li><li><code>github.com/walkinglabs/learn-harness-engineering</code></li></ul></div>
 </section>
 
-<section class="slide xdense" data-part="Opening">
+<section class="slide" data-part="Opening">
   <h2>Agenda</h2>
-  <div class="body"><ul><li>What and why: harness engineering</li><li><p>One app, maintained over the rounds:</p>
-<ul><li><strong>Round 1</strong> · Migration · <em>Verification</em>: did the agent run everything? · split: half with, half without</li><li><strong>Round 2</strong> · Feature · <em>Architecture rules</em>: did the code land in the right place? · build your own harness</li><li><strong>Round 3</strong> · Bug fix · <em>Workflow</em>: red → green → refactor, did a test fail before the fix? · add to your harness</li><li><strong>Round 4</strong> · Bigger feature · <em>Growing the architecture</em>: what does your harness need before the next prompt? · think, then let your agent update it</li></ul></li><li><strong>Wrap-up</strong> · audit your own repo</li></ul></div>
+  <div class="body"><ul><li>What and why: harness engineering</li><li><p>One app, maintained over four rounds:</p>
+<ul><li><strong>Round 1</strong> · Migration · <em>Verification</em>: did the agent run everything?</li><li><strong>Round 2</strong> · Feature · <em>Architecture rules</em>: did the code land in the right place?</li><li><strong>Round 3</strong> · Bug fix · <em>Workflow</em>: did a test fail before the fix?</li><li><strong>Round 4</strong> · Bigger feature · <em>Growing the architecture</em>: is your harness ready for the next prompt?</li></ul></li><li><strong>Wrap-up</strong> · audit your own repo</li></ul></div>
 </section>
 
 <section class="slide" data-part="Opening">
@@ -260,7 +260,7 @@ body.presenter #presenter {
   <div class="body"><ul><li>Models keep getting better. They still say "done" when they aren't.</li><li>A better model writes more code, faster, so there's more for you to check.</li><li>Reading every line doesn't scale. <strong>The repo has to check the work, not you.</strong></li></ul></div><p class="callout sm">Stop trusting. Start verifying.</p>
 </section>
 
-<section class="slide dense" data-part="Opening">
+<section class="slide" data-part="Opening">
   <h2>Different work, different harness</h2>
   <div class="body"><table><tr><th></th><th>Maintenance (today)</th><th>Load / performance work</th></tr><tr><td>"Done" means</td><td>Tests pass, rules hold, small diff</td><td>Meets a latency / throughput target</td></tr><tr><td>Check</td><td><code>make check</code>, archtest</td><td>A load-test command with fixed settings</td></tr><tr><td>Gate</td><td>CI fails on a broken rule</td><td>CI fails if p95 gets worse than the baseline</td></tr><tr><td>Context</td><td>Architecture docs</td><td>Baseline numbers, test environment, what "worse" means</td></tr></table></div><p class="callout sm">Same model, different harness, because "done" changed.</p>
 </section>
@@ -270,7 +270,7 @@ body.presenter #presenter {
   <div class="body"><ul><li>Hotel booking API in Go, standard library, SQLite, no Docker.</li><li><code>handler → service → repository</code>, plus <code>model</code> and <code>jobs</code>.</li><li>5 endpoints: rooms, quotes, bookings, cancel, revenue report.</li><li>You don't need to know Go well. The agent writes the code; you build the harness.</li></ul></div>
 </section>
 
-<section class="slide dense xdense" data-part="Opening">
+<section class="slide dense" data-part="Opening">
   <h2>The big picture</h2>
   <div class="body"><svg class="diagram" viewBox="0 -2 1080 350" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs><line x1="500" y1="58" x2="500" y2="105" class="ar" marker-end="url(#ah)"/><line x1="330" y1="58" x2="120.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="650" y1="58" x2="740.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="720" y1="58" x2="930.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="880" y1="58" x2="790.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="970" y1="58" x2="980.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="410" y1="149" x2="150.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="440" y1="149" x2="340.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="540" y1="149" x2="560.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="590" y1="149" x2="720.0" y2="200" class="ar" marker-end="url(#ah)"/><line x1="460" y1="149" x2="460" y2="300" class="ar" marker-end="url(#ah)"/><line x1="120.0" y1="244" x2="380" y2="300" class="ar" marker-end="url(#ah)"/><line x1="360.0" y1="244" x2="420" y2="300" class="ar" marker-end="url(#ah)"/><line x1="760.0" y1="244" x2="660" y2="300" class="ar" marker-end="url(#ah)"/><line x1="960.0" y1="244" x2="720" y2="300" class="ar" marker-end="url(#ah)"/><line x1="750" y1="322" x2="880" y2="322" class="ar" marker-end="url(#ah)"/><rect x="250" y="0" width="500" height="58" rx="10" class="bx"/><text x="500.0" y="24" class="bt">handler</text><text x="500.0" y="44" class="bs">/rooms · /quotes · /bookings · /bookings/{id}/cancel · /reports/revenue</text><rect x="820" y="0" width="220" height="58" rx="10" class="bx"/><text x="930.0" y="24" class="bt">jobs</text><text x="930.0" y="44" class="bs">nightly revenue report</text><rect x="400" y="105" width="200" height="44" rx="10" class="bx"/><text x="500.0" y="134.0" class="bt">booking</text><rect x="40" y="200" width="160" height="44" rx="10" class="bx"/><text x="120.0" y="229.0" class="bt">room</text><rect x="240" y="200" width="200" height="44" rx="10" class="bx"/><text x="340.0" y="229.0" class="bt">availability</text><rect x="480" y="200" width="160" height="44" rx="10" class="bx"/><text x="560.0" y="229.0" class="bt">pricing</text><rect x="680" y="200" width="160" height="44" rx="10" class="bx"/><text x="760.0" y="229.0" class="bt">payment</text><rect x="880" y="200" width="160" height="44" rx="10" class="bx"/><text x="960.0" y="229.0" class="bt">report</text><rect x="330" y="300" width="420" height="44" rx="10" class="bx"/><text x="540.0" y="329.0" class="bt">repository</text><rect x="880" y="300" width="160" height="44" rx="10" class="bx"/><text x="960.0" y="329.0" class="bt">SQLite</text></svg>
 <ul><li>Arrows are imports, as the code is <strong>today</strong> (<code>r1-without</code>).</li><li><code>model</code> holds plain structs that every package uses (left out of the picture). <code>cmd/server</code> wires everything together and starts the nightly job.</li><li>One app, four rounds: you'll maintain this same code all session.</li></ul></div>
@@ -371,7 +371,7 @@ test:
 <p>Example (a blog, not this app): should <code>post</code> import <code>user</code>, or should a third package use both?</p></div>
 </section>
 
-<section class="slide dense" data-part="Round 2 · Architecture rules">
+<section class="slide" data-part="Round 2 · Architecture rules">
   <h2>Round 2 · How a build round works</h2>
   <div class="body"><table><tr><th>Step</th><th>What</th></tr><tr><td>1. Fail</td><td>Run the prompt on <code>r2-without</code></td></tr><tr><td>2. Build</td><td>Build your harness on <code>r2-mine</code>, starting from the kit in branch <code>r2-kit</code></td></tr><tr><td>3. Rerun</td><td>Fresh session, same tool, same prompt</td></tr><tr><td>4. Compare</td><td>Your harness vs ours in <code>r2-with</code></td></tr></table></div><p class="callout sm">Your harness may describe rules and checks, never the answer.</p>
 </section>
@@ -409,7 +409,7 @@ git checkout origin/r2-kit -- .</pre>
 <ul><li>Where do your rules differ from ours?</li><li>Would ours have stopped something yours let through?</li></ul></div>
 </section>
 
-<section class="slide dense" data-part="Round 2 · Architecture rules">
+<section class="slide" data-part="Round 2 · Architecture rules">
   <h2>Reveal: Round 2</h2>
   <div class="body"><ul><li>Our <code>allowed</code> map: the domain layer may import <code>repository</code> and <code>model</code>, <strong>not</strong> other domains.</li><li><p>The error message the agent sees:</p>
 <pre>FAIL: internal/service/payment imports internal/service/pricing
@@ -425,7 +425,7 @@ git checkout origin/r2-kit -- .</pre>
 <p>Example (a blog, not this app): "comment counts are off by one". What's the first thing you write?</p></div>
 </section>
 
-<section class="slide dense" data-part="Round 3 · Bug fix workflow">
+<section class="slide" data-part="Round 3 · Bug fix workflow">
   <h2>Round 3 · Step 1</h2>
   <div class="body"><ul><li>Steps: run · add to your harness · rerun · compare.</li><li><code>r3-without</code> = our R2 result (the busy-night surcharge) + our R2 harness.</li></ul>
 <pre>git checkout r3-without</pre>
@@ -470,7 +470,7 @@ red-first: ok, your changed tests fail on the code at HEAD:
 <div class="prompt" data-label="Next prompt · don't send it yet">Add POST /group-bookings: book 2–5 rooms of one room type for the same dates under one guest name. All rooms are booked or none are. Group stays follow the same stay rules as single bookings. Every room in a group pays the same price: the busy-night surcharge uses occupancy before the group, not the group's own rooms. Group bookings live in their own package, service/groupbooking, so booking doesn't keep growing.  Request: the /bookings fields plus "rooms". Response: 201 with {"bookings": [...], "total": ...}.</div></div><p class="callout sm">What would you add so the agent keeps delivering quality software, now and after this task?</p>
 </section>
 
-<section class="slide dense xdense" data-part="Round 4 · Growing the architecture · Think">
+<section class="slide dense" data-part="Round 4 · Growing the architecture · Think">
   <h2>Round 4 · What your harness checks today</h2>
   <div class="body"><table><tr><th>Your harness (<code>r4-without</code>)</th><th>Since</th></tr><tr><td><code>make check</code>: gofmt, vet, every test incl. integration; paste the output</td><td>R1</td></tr><tr><td>Import rules between layers; every package must be registered</td><td>R2</td></tr><tr><td>Red → green → refactor; a changed test must fail on the old code</td><td>R3</td></tr></table>
 <p>This prompt adds new code, a new endpoint and new rules about money. For each, ask:</p>
