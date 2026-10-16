@@ -12,6 +12,9 @@ type RoomType struct {
 	Capacity    int     `json:"capacity"`
 	WeekdayRate float64 `json:"weekday_rate"`
 	WeekendRate float64 `json:"weekend_rate"`
+	// FromPrice is the lowest nightly price including VAT, for the rooms
+	// page. Only RoomTypes.List fills it.
+	FromPrice float64 `json:"from_price"`
 }
 
 type Room struct {
