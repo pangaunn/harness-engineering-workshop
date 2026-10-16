@@ -29,6 +29,19 @@ Details and reasoning: [docs/architecture.md](docs/architecture.md). `make check
 3. Aggregates (`booking`) never import other aggregates.
 4. Every package must be registered in `internal/archtest/rules.go`.
 
+## Workflow
+
+Every bug fix and change goes red → green → refactor:
+
+1. **Red:** write a test that shows the bug (or the new behaviour) and see it fail on the current code.
+2. **Green:** make the smallest change that makes it pass.
+3. **Refactor:** tidy only the code you changed in step 2. Tests stay green.
+4. **Done:** `make check` passes. List anything else you noticed under "Follow-ups" in your
+   final message instead of changing it.
+
+`make check` checks step 1: when Go code changed, at least one changed `_test.go` file must fail
+on the code at `HEAD`. It also lists every file you changed.
+
 ## Verification
 
 You are not done until `make check` passes. Paste its final output in your final message.
